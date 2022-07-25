@@ -23,7 +23,7 @@ def exp_set1(weight_dir, log_dir):
     optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer
     scheduler = None #get your scheduler. If it is None, you use a constant learning rate.
     #scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=1000, T_mult=1, eta_min=0.0) #get your lr scheduler
-    early_stopping = EarlyStopping(patience=5, path=weight_dir)
+    early_stopping = EarlyStopping(patience=10, path=weight_dir)
 
 
     #tensorboard logger and metrics.
@@ -34,20 +34,19 @@ def exp_set1(weight_dir, log_dir):
 
 
     #training process
-    epochs = 10
+    epochs = 100
     for epoch in range(1,epochs+1):
         train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=scheduler) 
-        metrics["train"].to_writer(writer)
-        metrics["val"].to_writer(writer)
+        metrics["train"].to_writer(writer) #tensorboard에 기록
+        metrics["val"].to_writer(writer) #tensorboard에 기록
         early_stopping(metrics["val"].cal_epoch_loss(), epoch, model, optimizer) #early stopper monitors validation loss and save your model. It stops training process with Its stop condition.
         if early_stopping.early_stop:
             print("Early stopping")
             break
-
-
+        
     optimizer = model.load(weight_dir, optimizer) # load Its the best checkpoint.
 
     #test process
     test_epoch(model, data_loaders["test"], metrics)
-    metrics["test"].to_writer(writer)
+    metrics["test"].to_writer(writer) #tensorboard에 기록
     metrics["test"].to_csv(log_dir)
