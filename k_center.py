@@ -2,29 +2,64 @@ from scipy.spatial import distance
 import numpy as np
 
 
-class Set_distance:
+class Set_handle:
 
     def __init__(self,Set1, Set2):
         self.set1 = Set1
         self.set2 = Set2
         self.distance = None
 
+
+
+
+    def mean_covariance(self,conv_set):
+        mean_vec = np.mean(conv_set, axis=0)
+        covar_matrix = np.cov(conv_set.T)
+        return mean_vec, covar_matrix
+
+
+    
+    def hellinger_distance(self): #헬링거 거리
+        self.set_error()
+
+        mean1, cov_matrix1 = self.mean_covariance(self.set1)
+        mean2, cov_matrix2 = self.mean_covariance(self.set2)
+        avg_cov = (cov_matrix1 + cov_matrix2)/2
+        inv_cov = nl.matrix_power(avg_cov,-1)
+
+        hell_dist =  np.sqrt(np.sqrt(nl.det(cov_matrix1))) * np.sqrt(np.sqrt(nl.det(cov_matrix2)))/ np.sqrt(nl.det(avg_cov))
+        hell_dist *= np.exp(-(mean1- mean2).T.dot(inv_cov).dot(mean1- mean2)/8)
+        hell_dist = np.sqrt(1- hell_dist)
+        return hell_dist
+
+    def bhattacharyya_distance(self): #바타차리야 거리
+        self.set_error()
+
+        mean1, cov_matrix1 = self.mean_covariance(self.set1)
+        mean2, cov_matrix2 = self.mean_covariance(self.set2)
+        avg_cov = (cov_matrix1 + cov_matrix2)/2
+        inv_cov = nl.matrix_power(avg_cov,-1)
+
+        bha_dist = (mean1- mean2).T.dot(inv_cov).dot(mean1- mean2)/8
+        bha_dist += ln(nl.det(avg_cov)/ np.sqrt(nl.det(cov_matrix1) * nl.det(cov_matrix2)))/2
+        return bha_dist
+
+    def kullback_leibler_divergence(self): #쿨백-리버 발산
+        self.set_error()
+
+        mean1, cov_matrix1 = self.mean_covariance(self.set1)
+        mean2, cov_matrix2 = self.mean_covariance(self.set2)
+        inv_cov2 = nl.matrix_power(cov_matrix2,-1)
+        k= self.set1.shape[1]
+
+        kl_dist = (np.trace(np.dot(inv_cov2,cov_matrix1)) - k + (mean2- mean1).T.dot(inv_cov2).dot(mean2- mean1) + ln(nl.det(cov_matrix2)/nl.det(cov_matrix1)) )/2
+        return kl_dist
+
+    def set_error(self):
         if (type(self.set1) is not np.ndarray) or type(self.set2) is not np.ndarray:
             raise Exception("Vector sets invaild type. it have to numpy.ndarray")
-
-
-    def L_matrix(self, L=2):
-        Row = self.set1.shape[0]
-        Column = self.set2.shape[0]
-        out = [  [ np.linalg.norm((self.set1[i]-self.set2[j]),L)   for i in range(Row) ] for j in range(Column) ]
-        return np.array(out)
-
-    def mean_covariance_matrix(self, Vector_set):
-        set_mean = np.mean(Vector_set, axis=0)
-        return 0
-
-    def simple_max_distance(self,L=2):      
-        return np.max(self.L_matrix(L))
+        elif self.set1.shape[1] != self.set2.shape[1]:
+            raise Exception("Shape of two vector sets does not fit")
     
 
 class Kcenter:
@@ -49,19 +84,47 @@ class Kcenter:
                 mi = i
         return mi  #dist 벡터 중 가장 큰 값을 가진 index를 찾는다.
 
-    def distance_matrix(self, method="simple_max_distance"):
-        if method == "simple_max_distance":
-
+    def distance_matrix(self, method="hellinger_distance"):
+        print("현재 클러스터링 거리 함수는 "+method)
+        if method == "bhattacharyya_distance":
+            self.weights = []
             for idx in range(self.n):
                 std_vector_set = self.vector_set[idx]
                 dist=[]
                 for jdx in range(self.n):
-                    SD = Set_distance(Set1 = std_vector_set, Set2= self.vector_set[jdx])
-                    dist.append(SD.simple_max_distance())
-                print(self.weights.shape)
+                    sd = Set_handle(Set1 = std_vector_set, Set2= self.vector_set[jdx]).bhattacharyya_distance()
+                    dist.append(sd)
                 
-                self.weights= np.append(self.weights, dist, axis=0)
+                self.weights.append(dist)
+            self.weights = np.array(self.weights)
+            print(self.weights.shape)
+            return self.weights
+
+        elif method == "hellinger_distance":
+            self.weights = []
+            for idx in range(self.n):
+                std_vector_set = self.vector_set[idx]
+                dist=[]
+                for jdx in range(self.n):
+                    sd = Set_handle(Set1 = std_vector_set, Set2= self.vector_set[jdx]).hellinger_distance()
+                    dist.append(sd)
                 
+                self.weights.append(dist)
+            self.weights = np.array(self.weights)
+            print(self.weights.shape)
+            return self.weights
+
+        elif method == "kullback_leibler_divergence":
+            self.weights = []
+            for idx in range(self.n):
+                std_vector_set = self.vector_set[idx]
+                dist=[]
+                for jdx in range(self.n):
+                    sd = Set_handle(Set1 = std_vector_set, Set2= self.vector_set[jdx]).kullback_leibler_divergence()
+                    dist.append(sd)
+                
+                self.weights.append(dist)
+            self.weights = np.array(self.weights)
             print(self.weights.shape)
             return self.weights
         else:
@@ -99,12 +162,6 @@ class Kcenter:
             print(i, end=" ")
 
         return self.index_map, self.dist                        # 종_id:center_id 딕셔너리,   id 마다 center로부터 거리
-
-
-
-    
-        
-
 
 
 
