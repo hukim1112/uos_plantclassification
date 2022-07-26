@@ -68,16 +68,16 @@ class Baseline(nn.Module):
 
 
 class EfficientB0(Baseline):
-    def __init__(self, num_classes, loss_fn, fc_type="deep"):
+    def __init__(self, num_classes, loss_fn, fc_type="deep", pretrained=False):
         super(EfficientB0, self).__init__(loss_fn)
         self.num_classes = num_classes
         self.fc_type = fc_type
-        self.patch_embedding = self.get_patch_embedding()
+        self.patch_embedding = self.get_patch_embedding(pretrained)
         self.embedding = self.get_embedding()
         self.fc = self.get_fc()     
 
-    def get_patch_embedding(self):
-        cnn = timm.create_model('efficientnet_b0', pretrained=False)
+    def get_patch_embedding(self, pretrained= False):
+        cnn = timm.create_model('efficientnet_b0', pretrained= pretrained)
         return nn.Sequential( *list(cnn.children())[:-2])
     
     def get_embedding(self):
