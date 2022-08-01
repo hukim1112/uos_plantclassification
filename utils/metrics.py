@@ -32,7 +32,7 @@ class Metric_tracker():
                     self.samples_per_class[gt.item()]+=1 #counting class item.
                     top_k = pred[:k]
                     self.topk_tp[k][gt.item()]+=torch.sum(gt == top_k).item()
-                    self.top1_fp+= torch.sum(gt != top_k).item()
+                    self.top1_fp[k]+= torch.sum(gt != top_k).item()
                 else:
                     top_k = pred[:k]
                     self.topk_tp[k][gt.item()]+=torch.sum(gt == top_k).item()
@@ -61,11 +61,14 @@ class Metric_tracker():
 
     def to_csv(self, path):
         samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss = self.result()
-        df = pd.DataFrame({"name" : list(self.class_to_name.values()), 
+        df1 = pd.DataFrame({"name" : list(self.class_to_name.values()), 
                            "samples_per_class" : samples_per_class.numpy(),
                            "precision" : precisions.numpy(),
                            "recall" : recalls.numpy()})
-        df.to_csv(join(path, f"categorical_metrics_{self.split}.csv"))
+        df2 = pd.DataFrame({"name" : [k for k in self.set_k]+["balanced_acc", "loss"], 
+                           "metric" : [topk_acc[k] for k in self.set_k]+[torch.mean(recalls).item(), epoch_loss.item()]})
+        df1.to_csv(join(path, f"categorical_metrics_{self.split}.csv"))
+        df2.to_csv(join(path, f"overall_metric_{self.split}.csv"))
 
 
     def cal_samples(self):
