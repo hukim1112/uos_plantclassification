@@ -44,8 +44,7 @@ class Baseline(nn.Module):
         if not os.path.exists(dir):
             os.makedirs(dir)
         d = {'epoch': epoch,
-            'patch_embedding': self.patch_embedding.state_dict(),
-            'fc' : self.fc.state_dict()}
+            'model': self.state_dict()}
         if optimizer is not None:
             d['optimizer'] = optimizer.state_dict()
         torch.save(d, path_to_pt) 
@@ -59,42 +58,8 @@ class Baseline(nn.Module):
             else:
                 data = torch.load(path_to_pt, map_location=lambda storage, loc: storage)
 
-            self.patch_embedding.load_state_dict(data["patch_embedding"])
-            self.fc.load_state_dict(data['fc'])
+            self.load_state_dict(data["model"])
             self.epoch = data['epoch']
             if optimizer is not None:
                 optimizer.load_state_dict(data['optimizer'])
             return optimizer
-
-
-class EfficientB0(Baseline):
-    def __init__(self, num_classes, loss_fn, fc_type="deep"):
-        super(EfficientB0, self).__init__(loss_fn)
-        self.num_classes = num_classes
-        self.fc_type = fc_type
-        self.patch_embedding = self.get_patch_embedding()
-        self.embedding = self.get_embedding()
-        self.fc = self.get_fc()     
-
-    def get_patch_embedding(self):
-        cnn = timm.create_model('efficientnet_b0', pretrained=False)
-        return nn.Sequential( *list(cnn.children())[:-2])
-    
-    def get_embedding(self):
-        return nn.Sequential(nn.AdaptiveAvgPool2d((1,1)), nn.Flatten())
-
-    def get_fc(self):
-        if self.fc_type == 'deep':
-            fc = nn.Sequential(nn.Linear(1280, 1024),
-                                        nn.BatchNorm1d(1024,  momentum=0.1),
-                                        nn.ReLU(),
-                                        nn.Linear(1024, 1024),
-                                        nn.BatchNorm1d(1024,  momentum=0.1),
-                                        nn.ReLU(),
-                                        nn.Linear(1024, self.num_classes))
-
-        elif self.fc_type == 'shallow':
-            fc = nn.Linear(1280, self.num_classes)
-        else:
-            raise ValueError(f"Wrong fc-type input {self.fc_type}")
-        return fc

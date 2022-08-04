@@ -20,12 +20,12 @@ def train_epoch(model, optimizer, train_dataloader, val_dataloader, metrics, lr_
         metrics["val"].update(loss, y_true, y_pred)
         t.set_description(f"val-step loss : {metrics['val'].losses[-1]:.3f}")
 
-def test_epoch(model, test_dataloader, metrics):
+def test_epoch(model, test_dataloader, metric):
     model.eval()
-    metrics["test"].reset()
+    metric.reset()
     t = tqdm(test_dataloader)
     for batch in t:
         images, y_true = batch
         loss, y_pred = model.test_step(images, y_true)
-        metrics["test"].update(loss, y_true, y_pred)
-        t.set_description(f"test-step loss : {metrics['test'].losses[-1]:.3f}")
+        metric.update(loss, y_true, y_pred)
+        t.set_description(f"test-step loss : {metric.losses[-1]:.3f}")

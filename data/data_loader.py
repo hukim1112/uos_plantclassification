@@ -19,7 +19,7 @@ default_transforms = {
         transforms.ToTensor()])
 }
 
-def get_plantnet(transforms=None):
+def get_plantnet(transforms=None, batch_size=32):
     if transforms is None:
         transforms = default_transforms
         
@@ -29,5 +29,5 @@ def get_plantnet(transforms=None):
         dataset = PlantNet300K(root=PATH["PLANTNET-300K"], split=split, shuffle=(split=="train"), transform=transforms[split])
         if split == "train":
             class_to_name = dataset.class_to_name
-        data_loaders[split] = DataLoader(dataset, batch_size=64, shuffle=(split=="train"), num_workers=4)
+        data_loaders[split] = DataLoader(dataset, batch_size=batch_size, shuffle=(split=="train"), num_workers=4)
     return data_loaders, class_to_name
