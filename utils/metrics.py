@@ -51,15 +51,15 @@ class Metric_tracker():
         epoch_loss = self.cal_epoch_loss()
         return samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss
 
-    def to_writer(self, writer, epoch, lr=None):
+    def to_writer(self, writer, epoch, optimizer=None):
         samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss = self.result()
         writer.add_scalar(f"Loss/{self.split}", epoch_loss.item(), epoch)
         writer.add_scalar(f"acc/{self.split}", topk_acc[1].item(), epoch)
         writer.add_scalar(f"balanced_acc/{self.split}", torch.mean(recalls).item(), epoch)
         for k in self.set_k:
             writer.add_scalar(f"top-{k} acc/{self.split}", topk_acc[k].item(), epoch)
-        if lr is not None:
-            writer.add_scalar(f"learning_rate/{self.split}", lr, epoch)
+        if optimizer is not None:
+            writer.add_scalar(f"learning_rate/{self.split}", optimizer.param_groups[0]["lr"], epoch)
 
     def to_csv(self, path):
         samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss = self.result()
