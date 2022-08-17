@@ -35,6 +35,16 @@ def bring_imgs(path,img_num): #이미지가 들어있는 경로와 가져오고 
         
     return np.array(images) #(256,256,3) 인 이미지들들을 리스트로 묶어서 반환시킴
 
+def path2imgs(paths): #주어진 이미지 경로들을 이미지로 읽어옴.
+    images = []
+    for path in paths:
+        img = np.array(Image.open(path))
+        img = cv2.resize(img, (256, 256))
+        img = np.float32(img) / 255
+        images.append(img)
+    return np.array(images) #(256,256,3) 인 이미지들들을 리스트로 묶어서 반환시킴
+
+
 
 class ShapeError(Exception):
     def __str__(self):
