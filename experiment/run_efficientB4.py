@@ -1,3 +1,4 @@
+from statistics import mean
 from data import get_plantnet
 from models import EfficientB4
 from utils.reproducibility import set_seed
@@ -10,8 +11,26 @@ from torch.optim import AdamW
 from torch import nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmRestarts, MultiStepLR
 from torch.utils.tensorboard import SummaryWriter
-from torchvision import transforms
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
+default_transforms = {
+    'train': A.Compose([
+        A.Resize(height=380, width=380),
+        A.HorizontalFlip(p=0.5),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()]),
+    'val': A.Compose([
+        A.Resize(height=380, width=380),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()]),
+    'test': A.Compose([
+        A.Resize(height=380, width=380),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()])
+}
+
+'''
 default_transforms = {
     'train': transforms.Compose([
         transforms.ToPILImage(),
@@ -27,6 +46,7 @@ default_transforms = {
         transforms.Resize((380, 380)),
         transforms.ToTensor()])
 }
+'''
 
 #LR E-3 + EfficientB4
 def exp_set1(weight_dir, log_dir):
@@ -55,7 +75,7 @@ def exp_set1(weight_dir, log_dir):
     # #training process
     epochs = 100
     for epoch in range(1,epochs+1):
-        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=scheduler) 
+        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, epoch, lr_scheduler=scheduler) 
         metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
         metrics["val"].to_writer(writer, epoch) #tensorboard에 기록
 
@@ -96,7 +116,7 @@ def exp_set2(weight_dir, log_dir):
     # #training process
     epochs = 100
     for epoch in range(1,epochs+1):
-        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=scheduler) 
+        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, epoch, lr_scheduler=scheduler) 
         metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
         metrics["val"].to_writer(writer, epoch) #tensorboard에 기록
 
@@ -113,7 +133,7 @@ def exp_set2(weight_dir, log_dir):
 #LR E-3 + CosineAnnealing + EfficientB4
 def exp_set3(weight_dir, log_dir):
     #experiment environment
-    device = "cuda:1" if torch.cuda.is_available() else "cpu"
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
     print(f"Using {device} device")
     set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
 
@@ -136,7 +156,7 @@ def exp_set3(weight_dir, log_dir):
     # #training process
     epochs = 100
     for epoch in range(1,epochs+1):
-        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=scheduler) 
+        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, epoch, lr_scheduler=scheduler) 
         metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
         metrics["val"].to_writer(writer, epoch) #tensorboard에 기록
 
@@ -176,7 +196,7 @@ def exp_set4(weight_dir, log_dir):
     # #training process
     epochs = 100
     for epoch in range(1,epochs+1):
-        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=None)
+        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, epoch, lr_scheduler=None)
         scheduler.step()
         metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
         metrics["val"].to_writer(writer, epoch) #tensorboard에 기록
@@ -194,7 +214,7 @@ def exp_set4(weight_dir, log_dir):
 #LR E-3 + ReducePlateau + EfficientB4
 def exp_set5(weight_dir, log_dir):
     #experiment environment
-    device = "cuda:2" if torch.cuda.is_available() else "cpu"
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
     print(f"Using {device} device")
     set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
 
@@ -217,7 +237,7 @@ def exp_set5(weight_dir, log_dir):
     # #training process
     epochs = 100
     for epoch in range(1,epochs+1):
-        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, lr_scheduler=None)
+        train_epoch(model, optimizer, data_loaders["train"], data_loaders["val"], metrics, epoch, lr_scheduler=None)
         scheduler.step(metrics["val"].cal_epoch_loss())
         metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
         metrics["val"].to_writer(writer, epoch) #tensorboard에 기록

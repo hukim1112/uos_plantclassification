@@ -55,6 +55,6 @@ class PlantNet300K(Dataset):
 
         label = img_path.split('/')[-2]
         class_id = self.label_to_class[label]
-        if self.transform:
-            image = self.transform(image)
+        if self.transform: #transform must be albumentation's tranform.
+            image = self.transform(image=image)["image"]
         return image, class_id
