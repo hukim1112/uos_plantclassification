@@ -30,24 +30,6 @@ default_transforms = {
         ToTensorV2()])
 }
 
-'''
-default_transforms = {
-    'train': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((380, 380)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor()]),
-    'val': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((380, 380)),
-        transforms.ToTensor()]),
-    'test': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((380, 380)),
-        transforms.ToTensor()])
-}
-'''
-
 #LR E-3 + EfficientB4
 def exp_set1(weight_dir, log_dir):
     #experiment environment

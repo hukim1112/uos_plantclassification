@@ -2,22 +2,25 @@ from config.path import PATH
 from .PlantNet import PlantNet300K
 from torchvision import transforms
 from torch.utils.data import DataLoader
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 default_transforms = {
-    'train': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((256, 256)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor()]),
-    'val': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((256, 256)),
-        transforms.ToTensor()]),
-    'test': transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((256, 256)),
-        transforms.ToTensor()])
+    'train': A.Compose([
+        A.Resize(height=256, width=256),
+        A.HorizontalFlip(p=0.5),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()]),
+    'val': A.Compose([
+        A.Resize(height=256, width=256),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()]),
+    'test': A.Compose([
+        A.Resize(height=256, width=256),
+        A.Normalize(mean=0.0, std=1.0),
+        ToTensorV2()])
 }
+
 
 def get_plantnet(transforms=None, batch_size=32):
     if transforms is None:
