@@ -10,7 +10,7 @@ class Embedder():
     def __init__(self, root, split):
         self.root = root
         self.split = split
-        self.label_to_class, self.class_to_name = self.labels()
+        self.label_to_class, self.class_to_name, self.label_to_name = self.labels()
         self.num_classes = len(self.label_to_class)
         self.model = None
 
@@ -34,7 +34,7 @@ class Embedder():
         for label, name in zip(label_to_name.keys(), label_to_name.values()):
             class_to_name[len(label_to_class)] = name
             label_to_class[label] = len(label_to_class)
-        return label_to_class, class_to_name
+        return label_to_class, class_to_name, label_to_name
     
     def get_class_files(self, label):
         dir_path = join(self.root, "images", self.split, label)
