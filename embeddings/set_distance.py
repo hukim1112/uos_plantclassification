@@ -63,6 +63,14 @@ class SetDist:  #Set1, Set2 모두 tensor
         dets = (self.log_det(avg_cov) - (self.log_det(cov_matrix1) + self.log_det(cov_matrix2))/2)/2
         return delta2 + dets
 
+    def mahalanobis_distance(self, embedding, stats):
+        mean, cov, inv_covariance = stats
+        delta = (embedding - mean)
+
+        distance = (torch.matmul(delta, inv_covariance) * delta).sum()
+        distance = torch.sqrt(distance)
+        return distance
+
     def kullback_leibler_divergence(self, set1, set2): #쿨백-리버 발산
         self.set_error(set1, set2)
         mean0, cov_matrix0,_ = self.multi_variate_gaussian(set1)
