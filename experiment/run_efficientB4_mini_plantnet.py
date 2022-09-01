@@ -1,5 +1,5 @@
 from statistics import mean
-from data import get_plantnet_for148
+from data import get_mini_plantnet
 from models import EfficientB4
 from utils.reproducibility import set_seed
 from utils.metrics import Metric_tracker
@@ -38,7 +38,7 @@ def exp_set1(weight_dir, log_dir):
     set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
 
     #data
-    data_loaders, class_to_name = get_plantnet_for148(transforms=default_transforms) #get PlantNet-300K dataset by default options.
+    data_loaders, class_to_name = get_mini_plantnet(transforms=default_transforms) #get PlantNet-300K dataset by default options.
     
     
     #model, optimizer, scheduler, earlystopping
@@ -110,7 +110,7 @@ def exp_set2(weight_dir, log_dir):
             }
 
     #data
-    data_loaders, class_to_name = get_plantnet_for148(transforms=transforms) #get PlantNet-300K dataset by default options.
+    data_loaders, class_to_name = get_mini_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.
 
     #model, optimizer, scheduler, earlystopping
     model = EfficientB4(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model

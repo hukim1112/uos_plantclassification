@@ -1,5 +1,5 @@
 from config.path import PATH
-from .PlantNet import PlantNet300K, MiniPlantNet, PlantNetTarget148
+from .PlantNet import PlantNet300K, MiniPlantNet
 from torch.utils.data import DataLoader
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
