@@ -16,6 +16,7 @@ import random
 import torchvision.transforms.functional as TF
 from torchvision import transforms
 
+#score cam을 사용할 수 있는 환경으로 개선되어 grad cam 패키지의 최신 버전으로 업데이트 시켰습니다. 
 
 def bring_imgs(path,img_num): #이미지가 들어있는 경로와 가져오고 싶은 이미지의 갯수를 인풋으로 받음
     
@@ -23,17 +24,18 @@ def bring_imgs(path,img_num): #이미지가 들어있는 경로와 가져오고 
     if img_num > len(img_list):
         print('이미지의 갯수가 입력값보다 적어서 폴더 내 모든 사진을 받아옵니다. 사진 갯수: {0}'.format(len(img_list)))
         img_num=len(img_list)
-    image_path = np.array(random.sample(img_list,img_num)) # 해당 카테고리 사진들중 랜덤하게 img_num개 뽑아옴
+    sampling_list = np.array(random.sample(img_list,img_num)) # 해당 카테고리 사진들중 랜덤하게 img_num개 뽑아옴
     images=[0]*img_num
-
+    img_path=[]
     for i in range(img_num):
-        images[i]=os.path.join(path,image_path[i])
+        images[i]=os.path.join(path,sampling_list[i])
+        img_path.append(images[i])
         img = np.array(Image.open(images[i]))
         img = cv2.resize(img, (256, 256))
         img = np.float32(img) / 255
         images[i]=img
         
-    return np.array(images) #(256,256,3) 인 이미지들들을 리스트로 묶어서 반환시킴
+    return np.array(images), img_path #(256,256,3) 인 이미지들들을 리스트로 묶어서 반환시킴 / image path 리스트 반환 추가
 
 def path2imgs(paths): #주어진 이미지 경로들을 이미지로 읽어옴.
     images = []
@@ -88,14 +90,15 @@ def printCAM(label, images, model, target_layers): #images: (256,256,3) 사이�
     for img in images:
         cam_list.append(img)
         input_tensor = preprocess_image(img,
-                                      mean=[0.485, 0.456, 0.406],
-                                        std=[0.229, 0.224, 0.225])
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+                                      mean=[0, 0, 0],
+                                        std=[1, 1, 1]) #이미지넷의 평균과 표준편차 적용된 것을 평균0 편차1로 수정
+        device = "cuda:1" if torch.cuda.is_available() else "cpu"
         input_tensor=input_tensor.to(device)
         
         method=(GradCAM(model=model, target_layers=target_layers),LayerCAM(model=model, target_layers=target_layers),
-                EigenCAM(model=model, target_layers=target_layers),EigenGradCAM(model=model, target_layers=target_layers))
-        
+                EigenCAM(model=model, target_layers=target_layers),EigenGradCAM(model=model, target_layers=target_layers),
+                ScoreCAM(model=model, target_layers=target_layers, use_cuda=True)) #score-cam 추가
+                
         for i in range(len(method)):
             with method[i] as cam:
                 grayscale_cams = cam(input_tensor=input_tensor, targets=targets) 
@@ -125,7 +128,8 @@ def diverse_CAM(label,images,model,CAMname,target_layers): #images: (256,256,3) 
         method={'gradCAM':GradCAM(model=model, target_layers=target_layers),
                 'layerCAM':LayerCAM(model=model, target_layers=target_layers),
                 'eigenCAM':EigenCAM(model=model, target_layers=target_layers),
-                'eigengradCAM':EigenGradCAM(model=model, target_layers=target_layers)}
+                'eigengradCAM':EigenGradCAM(model=model, target_layers=target_layers),
+                'scoreCAM':ScoreCAM(model=model, target_layers=target_layers, use_cuda=True)} #scorecam 추가
         
         with method[CAMname] as cam:
             grayscale_cams = cam(input_tensor=input_tensor, targets=targets) 
