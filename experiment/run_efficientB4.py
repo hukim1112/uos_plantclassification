@@ -4,7 +4,7 @@ from models import EfficientB4
 from utils.reproducibility import set_seed
 from utils.metrics import Metric_tracker
 from utils.earlystopping import EarlyStopping
-from experiment.epoch import train_epoch, test_epoch
+from utils.epoch import train_epoch, test_epoch
 
 import torch
 from torch.optim import AdamW
