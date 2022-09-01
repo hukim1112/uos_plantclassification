@@ -72,6 +72,7 @@ def exp_set1(weight_dir, log_dir):
 
 #LR E-3 + ReducePlateau + EfficientB4+ Augmentation
 def exp_set2(weight_dir, log_dir):
+    print("run2.py")
     #experiment environment
     device = "cuda:1" if torch.cuda.is_available() else "cpu"
     print(f"Using {device} device")
