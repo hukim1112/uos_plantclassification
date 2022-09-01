@@ -1,3 +1,3 @@
-from .PlantNet import PlantNet300K,PlantNetTarget148
+from .PlantNet import PlantNet300K, MiniPlantNet
 #from .LivingLab import Dataset
-from .data_loader import get_plantnet,get_plantnet_for148
+from .data_loader import get_plantnet, get_mini_plantnet
