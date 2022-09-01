@@ -99,3 +99,4 @@ class EfficientB4(Baseline):
         else:
             raise ValueError(f"Wrong fc-type input {self.fc_type}")
         return fc
+
