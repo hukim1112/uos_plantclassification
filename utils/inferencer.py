@@ -57,6 +57,8 @@ class Inferencer(): #사진에 대한 모델의 예측 top5를 바로 찍어주�
         
         if path==None:
             plt.imshow(image.permute(1,2,0))
+            plantname=self.json_data[self.categories[self.idx]]
+            plt.title(plantname ,fontsize=15)
             plt.show()
         
         image = image.unsqueeze(0)
@@ -73,7 +75,6 @@ class Inferencer(): #사진에 대한 모델의 예측 top5를 바로 찍어주�
         self.model.eval()    
         with torch.no_grad():
             pred=self.model(X.to(self.device))
-            print(pred.shape)
             prob=nn.Softmax(dim=1)
             pred=prob(pred)
             predicted_top5=torch.topk(pred,5)    #한 배치의 top5정보 지님, 형태는 [value= batch size*5 형태, indices=b size*5 형태]
@@ -108,7 +109,7 @@ class Inferencer(): #사진에 대한 모델의 예측 top5를 바로 찍어주�
                 #out_imgs.append(sample_img)
                 sample_img=vi.bring_imgs(os.path.join('/home/files/datasets/plantnet_300K/images/test/',label),1)[0]
                 out_imgs.append(sample_img)
-                self.visualize_pred(sample_img)
+                self.visualize_pred(sample_img,self.json_data[label])
                 
         return top5_dict # top5 acc 딕셔너리를 출력해주면된다. 
     
@@ -121,12 +122,12 @@ class Inferencer(): #사진에 대한 모델의 예측 top5를 바로 찍어주�
 
         return name_list
 
-    def visualize_pred(self,imgs): #top5 에 대한 visualize 하는거임
+    def visualize_pred(self,imgs,plantname): #top5 에 대한 visualize 하는거임
         CAMimgs=vi.diverse_CAM(self.idx,imgs,self.model,CAMname='eigenCAM',target_layers=[self.model.patch_embedding])
         shape=(len(imgs),5)
         vstable=vi.make_table(CAMimgs,shape=shape)
         plt.imshow(vstable)
-
+        plt.title(plantname +' with CAMs',y=1.3,fontsize=15)
         word=['original','CAM(gray)','CAM(color)','eigenCAM','detection box']
         for i in range(5):
             plt.text(256*i,-10,word[i])
