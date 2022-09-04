@@ -7,34 +7,16 @@ import numpy as np
 import pickle
 
 class Embedder():
-    def __init__(self, root, split):
-        self.root = root
-        self.split = split
-        self.label_to_class, self.class_to_name, self.label_to_name = self.labels()
+    def __init__(self, dataset, model, transform, device):
+        self.root = dataset.root
+        self.split = dataset.split
+        self.label_to_class = dataset.label_to_class
+        self.class_to_name = dataset.class_to_name
+        self.name_to_label = dataset.name_to_label
         self.num_classes = len(self.label_to_class)
-        self.model = None
-
-    def get_model(self, model, transform, device):
         self.model = model.to(device)
         self.transform = transform
         self.device = device
-
-    def labels(self):
-        # example.
-        # label : "1355868" 
-        # name : "Lactuca virosa L."
-        # class : 0
-
-        label_to_class = {} # label => class
-        class_to_name = {} # class => name
-
-        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
-            label_to_name = json.load(file) #label => name
-        
-        for label, name in zip(label_to_name.keys(), label_to_name.values()):
-            class_to_name[len(label_to_class)] = name
-            label_to_class[label] = len(label_to_class)
-        return label_to_class, class_to_name, label_to_name
     
     def get_class_files(self, label):
         dir_path = join(self.root, "images", self.split, label)
@@ -49,7 +31,7 @@ class Embedder():
         label = img_path.split('/')[-2]
         class_id = self.label_to_class[label]
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)["image"]
         return image, class_id
 
     def extract_predictions(self, label):
@@ -108,33 +90,3 @@ class Embedder():
         with open(join(path, "filename", label), "rb") as fp:
             file_paths = pickle.load(fp)
         return embeddings, top_1_prob, correctness, file_paths
-
-'''
-import torch
-from torch import nn
-from models import EfficientB4
-from torchvision import transforms
-from config.path import PATH
-from experiment.extract_embeddings import Embedder
-from tqdm import tqdm
-
-root = PATH["PLANTNET-300K"]
-transform = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.Resize((380, 380)),
-            transforms.ToTensor()])
-device = "cuda:0"
-weight_dir = "/home/files/experiments/efficientB4/exp_set3/checkpoints/checkpoint.pt"
-
-
-from os.path import join
-for split in ["train", "val", "test"]:
-    emb = Embedder(root, split, transform, device)
-    labels = list(emb.label_to_class.keys())
-    model = EfficientB4(num_classes=emb.num_classes, loss_fn=nn.CrossEntropyLoss()) #get your model
-    model.load(weight_dir) # load Its the best checkpoint.
-    emb.get_model(model.to(device))
-
-    for label in tqdm(labels):
-        emb.save_embeddings(join("/home/files/experiments/plantnet_embeddings", split), label)
-'''

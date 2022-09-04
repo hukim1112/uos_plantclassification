@@ -86,7 +86,7 @@ class MiniPlantNet(PlantNet300K):
         return filelist
 
     def labels(self): #change labels to new target classes
-        dir_path = join(self.root, "images", self.split)
+        dir_path = join(self.root, "images", "train")
         sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub))]
         target_labels = [os.path.basename(sub_path) for sub_path in sub_paths if len(os.listdir(sub_path))>=self.minimum]
 
