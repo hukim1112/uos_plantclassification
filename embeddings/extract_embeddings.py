@@ -14,10 +14,12 @@ class Embedder():
         self.class_to_name = dataset.class_to_name
         self.name_to_label = dataset.name_to_label
         self.num_classes = len(self.label_to_class)
-        self.model = model.to(device)
         self.transform = transform
         self.device = device
-    
+        if model is not None:
+            self.model = model.to(device)
+        else:
+            self.model = model
     def get_class_files(self, label):
         dir_path = join(self.root, "images", self.split, label)
         return [join(dir_path, file) for file in listdir(dir_path)]

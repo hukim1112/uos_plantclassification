@@ -21,10 +21,11 @@ def extract_embeddings(exp_path, transforms, device):
         for label in tqdm(labels):
             emb.save_embeddings(join(exp_path, "embeddings", split), label)
 
-def calculate_dist_matrix(exp_path):
+def calculate_dist_matrix(exp_path, transforms, device):
     dataset =  MiniPlantNet(root=PATH["PLANTNET-300K"], split="train", shuffle=False, transform=None) #get your dataset
-    emb = Embedder(dataset, model=None, transforms=None, device=None)
-    labels = len(emb.label_to_class.keys())
+    model = None
+    emb = Embedder(dataset, model, transforms, device)
+    labels = list(emb.label_to_class.keys())
     num_label = len(labels)
     dist_matrix = np.zeros(shape=(num_label, num_label))-1
     dist = SetDist()
