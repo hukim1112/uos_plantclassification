@@ -1,18 +1,14 @@
-import numpy as np
 import torch
-from .set_distance import SetDist
+import numpy as np
 
-class Kcenter:
-    def __init__(self, vectors, 
+class K_center_greedy:
+    def __init__(self, distance_matrix, 
                 k_numb = None , 
-                threshold= None, 
-                method="bhattacharyya_distance",
+                threshold= 25.,
                 initial_center_id="random"):
-        self.dist = SetDist()
-        self.vector_set = vectors
-        self.n = len(self.vector_set)           #N = vector set의 수
-        self.weights = self.distance_matrix(method = method)       #각 거리 NxN 메트릭스
 
+        self.weights = distance_matrix  #각 거리 NxN 메트릭스
+        self.n = self.weights.shape[0]
         self.k = k_numb                         #how many centers
         self.dist = torch.Tensor(self.n)  #각 class와 center class 간의 거리 
         self.index_map = dict()                 #집합 요소 id와 그 요소의 center id  
@@ -25,41 +21,14 @@ class Kcenter:
 
         self.threshold =threshold               #클러스터의 최대 반지름
         self.select_error() #예외처리
-
-    def distance_matrix(self, method="bhattacharyya_distance"):
-        if method == "bhattacharyya_distance":
-            self.weights = torch.eye(self.n)
-            for idx in range(self.n):
-                std_vector_set = self.vector_set[idx]
-                dist=[]
-                for jdx in range(self.n):
-                    sd = dist.bhattacharyya_distance(std_vector_set, self.vector_set[jdx])  #두 class 분포 간의 거리 출력 type is torch.Tensor
-                    dist.append(sd)
-
-                self.weights[idx] = torch.Tensor(dist)  #weights matrix update
-            return self.weights
-
-        elif method == "kullback_leibler_divergence":
-            self.weights = torch.Tensor([])
-            for idx in range(self.n):
-                std_vector_set = self.vector_set[idx]
-                dist=[]
-                for jdx in range(self.n):
-                    sd = dist.kullback_leibler_divergence(std_vector_set, self.vector_set[jdx]) #두 class 분포 간의 거리 출력 type is torch.Tensor
-                    dist.append(sd)
-
-                self.weights[idx] = torch.Tensor(dist)  #weights matrix update
-            return self.weights
-        else:
-            raise Exception("please choose other method default is bhattacharyya_distance")
-
+        self.selectKcenter()
 
     def selectKcenter(self):
         #dist의 값을 모두 무한에 가깝게 만든다. 즉 첫 center의 탐색 범위를 무한으로 만든다.
         for i in range(self.n): 
             self.dist[i] = torch.Tensor([10**9])
             self.index_map.update({i: self.initial_center_id})
-        
+
         i=0
         maxid = self.initial_center_id
         while True:
@@ -73,15 +42,40 @@ class Kcenter:
             self.centers = torch.cat((self.centers, torch.Tensor([maxid])), dim=0)
             i+=1
             
-            if self.threshold != None  :                             #거리의 최대값을 지정한 경우
+            if self.threshold is not None  :                             #거리의 최대값을 지정한 경우
                 if torch.max(self.dist) <= self.threshold:
                     break
-            
-            if i== self.k:                                      #center 수의 값을 지정한 경우
-                break
-            
+                
+            if self.k is not None:
+                if i== self.k:                                      #center 수의 값을 지정한 경우
+                    break
         return [self.index_map, self.dist]                        # 종_id:center_id 딕셔너리,   id 마다 center로부터 거리
 
+    def get_clusters(self, class_to_name):
+        clusters = {}
+        name_clusters = {}
+        fine_to_coarse = {}
+        center_to_coarse = {}
+        
+        for label, center in self.index_map.items():
+            label_name = class_to_name[label]
+            center_name = class_to_name[center]
+            
+            if center in clusters.keys():
+                if not label in clusters[center]:
+                    clusters[center].append(label)                    
+                    name_clusters[center_name].append(label_name)
+            else:
+                clusters[center] = [label]
+                name_clusters[center_name] = [label_name]
+                
+        for _class, _center in dict(sorted(self.index_map.items(), key=lambda item: item[1])).items():
+            if _center not in center_to_coarse.keys():
+                center_to_coarse[_center] = len(center_to_coarse)
+            fine_to_coarse[_class] = center_to_coarse[_center]
+                
+        return clusters, name_clusters, fine_to_coarse, center_to_coarse
+ 
     def select_error(self): #select_k_center 함수의 예외처리
         #weight 행렬이 비어있는 경우
         if len(self.weights) ==0:

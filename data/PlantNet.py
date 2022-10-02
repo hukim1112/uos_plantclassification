@@ -120,3 +120,65 @@ class MiniPlantNet(PlantNet300K):
         if self.transform: #transform must be albumentation's tranform.
             image = self.transform(image=image)["image"]
         return image, class_id
+    
+    
+class HierarchicalMiniPlantNet(PlantNet300K):
+    def __init__(self, root, split, fine_to_coarse, shuffle=False, transform=None, minimum_samples=32):
+        self.root = root
+        self.split = split
+        self.shuffle = shuffle
+        self.transform = transform
+        self.minimum = minimum_samples
+        self.label_to_class, self.class_to_name, self.name_to_label = self.labels()
+        self.filelist = self.get_filelist()
+        self.fine_to_coarse = fine_to_coarse
+
+    def get_filelist(self):
+        dir_path = join(self.root, "images", self.split)
+        sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub)) and (sub in list(self.label_to_class.keys()))]
+
+        filelist = []
+        for sub_path in sub_paths:
+            files = [ join(sub_path, _file)  for _file in os.listdir(sub_path) if isfile(join(sub_path, _file))]
+            filelist += files
+        if self.shuffle == True:
+            shuffle(filelist)
+        return filelist
+
+    def labels(self): #change labels to new target classes
+        dir_path = join(self.root, "images", "train")
+        sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub))]
+        target_labels = [os.path.basename(sub_path) for sub_path in sub_paths if len(os.listdir(sub_path))>=self.minimum]
+
+        label_to_class = {} # label => class
+        class_to_name = {} # class => name
+        name_to_label = {} # name => label
+
+        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
+            label_to_name = json.load(file) #label => name
+        
+        for label, name in zip(label_to_name.keys(), label_to_name.values()):
+            if label not in target_labels: 
+                continue
+            class_to_name[len(label_to_class)] = name
+            label_to_class[label] = len(label_to_class)
+            name_to_label[name] = label
+        return label_to_class, class_to_name, name_to_label         
+
+    def __len__(self):
+        return len(self.filelist)
+
+    def __getitem__(self, idx):
+        img_path = self.filelist[idx]
+        image = cv2.imread(img_path)
+        if image is None:
+            print(f"Fail to load image file : {img_path}")
+        image = image[:,:,::-1]
+
+        label = img_path.split('/')[-2]
+        fine_class_id = self.label_to_class[label]
+        coarse_class_id = self.fine_to_coarse[str(fine_class_id)]
+        
+        if self.transform: #transform must be albumentation's tranform.
+            image = self.transform(image=image)["image"]
+        return image, coarse_class_id, fine_class_id

@@ -46,3 +46,4 @@ class EarlyStopping:
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
         model.save(epoch, self.path, optimizer=optimizer)
+        self.val_loss_min = val_loss
