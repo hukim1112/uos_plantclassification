@@ -12,7 +12,7 @@ def train_EfficientB4(device):
 
 def train_VGG19(device):
     exp_list = [exp_set1, exp_set2]
-    exp_name = ["exp_set1", "exp_set2"]
+    exp_name = ["exp_set3", "exp_set4"]
     for exp, name in zip(exp_list, exp_name):
         exp_dir = f"/home/files/experiments/mini_plantnet/baseline/VGG19/{name}"
         weight_dir = f"{exp_dir}/checkpoints/checkpoint.pt"

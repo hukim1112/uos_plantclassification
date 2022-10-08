@@ -18,20 +18,20 @@ class VGG19(Baseline):
         return nn.Sequential( *list(cnn.children())[:-2])
     
     def get_embedding(self):
-        return nn.Sequential(nn.AdaptiveAvgPool2d((1,1)), nn.Flatten())
+        return nn.Sequential(nn.Flatten())
 
     def get_fc(self):
         if self.fc_type == 'deep':
-            fc = nn.Sequential(nn.Linear(512, 512),
-                                        nn.BatchNorm1d(512,  momentum=0.1),
+            fc = nn.Sequential(nn.Linear(61952, 1024),
+                                        nn.BatchNorm1d(1024,  momentum=0.1),
                                         nn.ReLU(),
-                                        nn.Linear(512, 512),
-                                        nn.BatchNorm1d(512,  momentum=0.1),
+                                        nn.Linear(1024, 1024),
+                                        nn.BatchNorm1d(1024,  momentum=0.1),
                                         nn.ReLU(),
-                                        nn.Linear(512, self.num_classes))
+                                        nn.Linear(1024, self.num_classes))
 
         elif self.fc_type == 'shallow':
-            fc = nn.Linear(512, self.num_classes)
+            fc = nn.Linear(61952, self.num_classes)
         else:
             raise ValueError(f"Wrong fc-type input {self.fc_type}")
         return fc
