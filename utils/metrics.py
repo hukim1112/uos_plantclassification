@@ -32,7 +32,7 @@ class Metric_tracker():
                     self.samples_per_class[gt.item()]+=1 #counting class item.
                     top_k = pred[:k]
                     self.topk_tp[k][gt.item()]+=torch.sum(gt == top_k).item()
-                    self.top1_fp[k]+= torch.sum(gt != top_k).item()
+                    self.top1_fp[gt.item()]+= torch.sum(gt != top_k).item()
                 else:
                     top_k = pred[:k]
                     self.topk_tp[k][gt.item()]+=torch.sum(gt == top_k).item()
