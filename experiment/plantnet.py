@@ -1,5 +1,5 @@
-from statistics import mean
-from data import get_mini_plantnet
+from config.path import PATH
+from data import get_plantnet
 from utils.reproducibility import set_seed
 from utils.metrics import Metric_tracker
 from utils.earlystopping import EarlyStopping
@@ -15,7 +15,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 #LR E-3 + ReducePlateau + EfficientB4+ Augmentation
-def exp_set1(weight_dir, log_dir, MODEL, device):
+def train_set1(weight_dir, log_dir, MODEL, device):
     #experiment environment
     print(f"Using {device} device")
     set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
@@ -53,7 +53,7 @@ def exp_set1(weight_dir, log_dir, MODEL, device):
             }
 
     #data
-    data_loaders, class_to_name = get_mini_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.
+    data_loaders, class_to_name = get_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.
 
     #model, optimizer, scheduler, earlystopping
     model = MODEL(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
@@ -86,7 +86,7 @@ def exp_set1(weight_dir, log_dir, MODEL, device):
     metrics["test"].to_csv(log_dir)
 
 #LR E-3 + CosineAnnealing + EfficientB4 + Augmentation
-def exp_set2(weight_dir, log_dir, MODEL, device):
+def train_set2(weight_dir, log_dir, MODEL, device):
     #experiment environment
     print(f"Using {device} device")
     set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
@@ -124,7 +124,7 @@ def exp_set2(weight_dir, log_dir, MODEL, device):
             }
 
     #data
-    data_loaders, class_to_name = get_mini_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.
+    data_loaders, class_to_name = get_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.
 
     #model, optimizer, scheduler, earlystopping
     model = MODEL(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
@@ -154,4 +154,54 @@ def exp_set2(weight_dir, log_dir, MODEL, device):
     #test process
     test_epoch(model, data_loaders["test"], metrics["test"])
     metrics["test"].to_csv(log_dir)
+
+def test(weight_dir, log_dir, MODEL, device):
+    #experiment environment
+    print(f"Using {device} device")
+    set_seed(random_seed=614, use_gpu=True, dev=True) #set a random-seed for reproducible experiment.
+
+    #augmentation
+    transforms = {
+    'train': A.Compose([
+            A.LongestMaxSize(max_size=500),
+            A.PadIfNeeded(min_height=int(380),
+            min_width=int(380),
+            position='top_left',
+            border_mode=cv2.BORDER_CONSTANT),
+            A.RandomCrop(380,380,p=1.0),
+            A.HorizontalFlip(0.5),
+            A.Normalize(mean=0.0, std=1.0),
+            ToTensorV2()]),
+    'val': A.Compose([
+            A.LongestMaxSize(max_size=500),
+            A.PadIfNeeded(min_height=int(380),
+            min_width=int(380),
+            position='top_left',
+            border_mode=cv2.BORDER_CONSTANT),
+            A.CenterCrop(380,380, p=1.0),
+            A.Normalize(mean=0.0, std=1.0),
+            ToTensorV2()]),
+    'test': A.Compose([
+            A.LongestMaxSize(max_size=500),
+            A.PadIfNeeded(min_height=int(380),
+            min_width=int(380),
+            position='top_left',
+            border_mode=cv2.BORDER_CONSTANT),
+            A.CenterCrop(380,380,p=1.0),
+            A.Normalize(mean=0.0, std=1.0),
+            ToTensorV2()])
+            }
+
+    #data
+    data_loaders, class_to_name = get_plantnet(transforms=transforms) #get PlantNet-300K dataset by default options.   
+    metric = Metric_tracker("test", class_to_name, log_dir)
     
+    #model, optimizer
+    model = MODEL(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
+    optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer    
+    
+    optimizer = model.load(weight_dir, optimizer) # load Its the best checkpoint.
+    
+    #test process
+    test_epoch(model, data_loaders["test"], metric)
+    metric.to_csv(log_dir)

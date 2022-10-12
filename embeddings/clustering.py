@@ -4,7 +4,7 @@ import numpy as np
 class K_center_greedy:
     def __init__(self, distance_matrix, 
                 k_numb = None , 
-                threshold= 25.,
+                radius= 25.,
                 initial_center_id="random"):
 
         self.weights = distance_matrix  #각 거리 NxN 메트릭스
@@ -19,7 +19,7 @@ class K_center_greedy:
             self.initial_center_id = initial_center_id
         self.centers = torch.Tensor([self.initial_center_id])        #center id list 초기화
 
-        self.threshold =threshold               #클러스터의 최대 반지름
+        self.radius = radius               #클러스터의 최대 반지름
         self.select_error() #예외처리
         self.selectKcenter()
 
@@ -32,7 +32,6 @@ class K_center_greedy:
         i=0
         maxid = self.initial_center_id
         while True:
-
             for j in range(self.n):                             #center와 점들 간의 거리를 업데이트
                 if self.weights[maxid][j] < self.dist[j]:
                     self.index_map[j] = maxid
@@ -42,8 +41,8 @@ class K_center_greedy:
             self.centers = torch.cat((self.centers, torch.Tensor([maxid])), dim=0)
             i+=1
             
-            if self.threshold is not None  :                             #거리의 최대값을 지정한 경우
-                if torch.max(self.dist) <= self.threshold:
+            if self.radius is not None  :                             #거리의 최대값을 지정한 경우
+                if torch.max(self.dist) <= self.radius:
                     break
                 
             if self.k is not None:
@@ -89,12 +88,12 @@ class K_center_greedy:
         elif self.initial_center_id>= self.n or self.initial_center_id<0:
             raise Exception("initial center id must be bigger than 0 or smaller than {%d}",self.n)
 
-        #k, threshold 둘 중 하나는 무조건 Nonetype이여야함.
+        #k, radius 둘 중 하나는 무조건 Nonetype이여야함.
         if self.k is None: # 최대 반지름 지정
-            if self.threshold is None:
-                raise Exception('Both k and threshold are None.')
-            elif (type(self.threshold) is not int) and (type(self.threshold) is not float):
-                raise Exception('threshold type error. now',type(self.threshold))
+            if self.radius is None:
+                raise Exception('Both k and radius are None.')
+            elif (type(self.radius) is not int) and (type(self.radius) is not float):
+                raise Exception('radius type error. now',type(self.radius))
 
         elif type(self.k) is not int:
             raise Exception('k type error. now',type(self.k))
@@ -103,9 +102,9 @@ class K_center_greedy:
             raise Exception("k is 0. clustering is not possible. If you don't want to decide on k, change it to None.")
         
         else: # 최대 center 수 지정
-            if self.threshold is None:
+            if self.radius is None:
                 pass
-            elif (type(self.threshold) is not int) and (type(self.threshold) is not float):
-                raise Exception('threshold type error. now',type(self.threshold))
-            else: #threshold가 0 이상의 값을 가질 경우.
-                raise Exception('k and threshold are incompatible. Change one of the two to None')
+            elif (type(self.radius) is not int) and (type(self.radius) is not float):
+                raise Exception('radius type error. now',type(self.radius))
+            else: #radius가 0 이상의 값을 가질 경우.
+                raise Exception('k and radius are incompatible. Change one of the two to None')

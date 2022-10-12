@@ -2,8 +2,9 @@ import torch
 import numpy as np
 
 class SetDist:  #Set1, Set2 모두 tensor
-    def __init__(self, dist_mode="bhattacharyya_distance"):
+    def __init__(self, dist_mode="bhattacharyya_distance", device='cpu'):
         self.dist_mode = "bhattacharyya_distance"
+        self.device = device
 
     def __call__(self, set1, set2):
         if self.dist_mode == "bhattacharyya_distance":
@@ -26,16 +27,13 @@ class SetDist:  #Set1, Set2 모두 tensor
 
     def multi_variate_gaussian(self,vector_set):
         # calculate multivariate Gaussian distribution
+        vector_set = vector_set.to(self.device)
         B, C = vector_set.size()
         mean = torch.mean(vector_set, dim=0)
-        cov = torch.zeros(C, C)
-        I = torch.eye(C)
-
-        # cov[:, :, i] = LedoitWolf().fit(embedding_vectors[:, :, i].numpy()).covariance_
+        cov = torch.zeros(C, C).to(self.device)
+        I = torch.eye(C).to(self.device)
         cov= torch.cov(vector_set.T) + 0.01 * I
-
         inv_cov = torch.linalg.inv(cov)
-
         return [mean, cov, inv_cov]
 
     def bhattacharyya_distance(self, set1, set2): #바타차리야 거리
