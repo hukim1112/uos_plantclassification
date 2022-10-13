@@ -1,0 +1,791 @@
+{
+  "Lactuca": [
+    "Lactuca virosa L.",
+    "Lactuca muralis (L.) Gaertn.",
+    "Lactuca sativa L.",
+    "Lactuca serriola L.",
+    "Lactuca plumieri (L.) Gren. & Godr.",
+    "Lactuca alpina (L.) Benth. & Hook.f.",
+    "Lactuca viminea (L.) J.Presl & C.Presl",
+    "Lactuca perennis L.",
+    "Lactuca floridana (L.) Gaertn.",
+    "Lactuca canadensis L.",
+    "Lactuca virosa Habl.",
+    "Lactuca alpina (L.) A.Gray"
+  ],
+  "Pelargonium": [
+    "Pelargonium graveolens L'Hér.",
+    "Pelargonium peltatum (L.) L'Hér.",
+    "Pelargonium zonale (L.) L'Hér.",
+    "Pelargonium x hybridum (L.) Aiton",
+    "Pelargonium inquinans (L.) Aiton",
+    "Pelargonium peltatum (L.) Aiton",
+    "Pelargonium x hortorum L.H. Bailey",
+    "Pelargonium zonale (L.) L'Hér. ex Aiton",
+    "Pelargonium × hortorum L.H. Bailey"
+  ],
+  "Cirsium": [
+    "Cirsium arvense (L.) Scop.",
+    "Cirsium vulgare (Savi) Ten.",
+    "Cirsium monspessulanum (L.) Hill",
+    "Cirsium palustre (L.) Scop.",
+    "Cirsium eriophorum (L.) Scop.",
+    "Cirsium erisithales (Jacq.) Scop.",
+    "Cirsium heterophyllum (L.) Hill",
+    "Cirsium oleraceum (L.) Scop.",
+    "Cirsium rivulare (Jacq.) All.",
+    "Cirsium tuberosum (L.) All.",
+    "Cirsium acaulon (L.) Scop.",
+    "Cirsium spinosissimum (L.) Scop.",
+    "Cirsium palustre (L.) Coss. ex Scop."
+  ],
+  "Mercurialis": [
+    "Mercurialis annua L.",
+    "Mercurialis perennis L.",
+    "Mercurialis tomentosa L."
+  ],
+  "Phyllanthus": [
+    "Phyllanthus tenellus Roxb.",
+    "Phyllanthus acidus (L.) Skeels",
+    "Phyllanthus amarus Schumach. & Thonn.",
+    "Phyllanthus urinaria L."
+  ],
+  "Hypericum": [
+    "Hypericum perforatum L.",
+    "Hypericum androsaemum L.",
+    "Hypericum hircinum L.",
+    "Hypericum hirsutum L.",
+    "Hypericum humifusum L.",
+    "Hypericum montanum L.",
+    "Hypericum perfoliatum L.",
+    "Hypericum tetrapterum Fr.",
+    "Hypericum annulatum Moris",
+    "Hypericum calycinum L.",
+    "Hypericum maculatum Crantz",
+    "Hypericum pulchrum L.",
+    "Hypericum richeri Vill.",
+    "Hypericum olympicum L.",
+    "Hypericum patulum Thunb.",
+    "Hypericum x hidcoteense Hilling ex Geerinck",
+    "Hypericum lanceolatum Lam."
+  ],
+  "Tradescantia": [
+    "Tradescantia fluminensis Vell.",
+    "Tradescantia zebrina Heynh. ex Bosse",
+    "Tradescantia pallida (Rose) D.R. Hunt",
+    "Tradescantia cerinthoides Kunth",
+    "Tradescantia spathacea Sw.",
+    "Tradescantia virginiana L.",
+    "Tradescantia zebrina Bosse",
+    "Tradescantia pallida (Rose) D.R.Hunt",
+    "Tradescantia ohiensis Raf.",
+    "Tradescantia zebrina hort. ex Bosse",
+    "Tradescantia sillamontana Matuda"
+  ],
+  "Lamium": [
+    "Lamium amplexicaule L.",
+    "Lamium flexuosum Ten.",
+    "Lamium hybridum Vill.",
+    "Lamium purpureum L.",
+    "Lamium galeobdolon (L.) L.",
+    "Lamium album L.",
+    "Lamium maculatum (L.) L.",
+    "Lamium orvala L.",
+    "Lamium maculatum L."
+  ],
+  "Lavandula": [
+    "Lavandula dentata L.",
+    "Lavandula multifida L.",
+    "Lavandula stoechas L.",
+    "Lavandula angustifolia Mill.",
+    "Lavandula latifolia Medik."
+  ],
+  "Melilotus": [
+    "Melilotus albus Medik.",
+    "Melilotus indicus (L.) All.",
+    "Melilotus officinalis (L.) Pall.",
+    "Melilotus altissimus Thuill.",
+    "Melilotus officinalis (L.) Lam."
+  ],
+  "Trifolium": [
+    "Trifolium fragiferum L.",
+    "Trifolium angustifolium L.",
+    "Trifolium arvense L.",
+    "Trifolium aureum Pollich",
+    "Trifolium campestre Schreb.",
+    "Trifolium hirtum All.",
+    "Trifolium hybridum L.",
+    "Trifolium incarnatum L.",
+    "Trifolium montanum L.",
+    "Trifolium ochroleucon Huds.",
+    "Trifolium pratense L.",
+    "Trifolium purpureum Loisel.",
+    "Trifolium resupinatum L.",
+    "Trifolium stellatum L.",
+    "Trifolium tomentosum L.",
+    "Trifolium rubens L.",
+    "Trifolium dubium Sibth.",
+    "Trifolium repens L.",
+    "Trifolium alpestre L.",
+    "Trifolium alpinum L.",
+    "Trifolium medium L.",
+    "Trifolium badium Schreb."
+  ],
+  "Dryopteris": [
+    "Dryopteris affinis (Lowe) Fraser-Jenk.",
+    "Dryopteris filix-mas (L.) Schott",
+    "Dryopteris carthusiana (Vill.) H.P.Fuchs",
+    "Dryopteris intermedia (Muhl. ex Willd.) A. Gray"
+  ],
+  "Nephrolepis": [
+    "Nephrolepis cordifolia (L.) C. Presl",
+    "Nephrolepis exaltata (L.) Schott",
+    "Nephrolepis cordifolia (L.) C.Presl",
+    "Nephrolepis biserrata (Sw.) Schott"
+  ],
+  "Osmunda": [
+    "Osmunda regalis L.",
+    "Osmunda claytoniana L."
+  ],
+  "Achyranthes": [
+    "Achyranthes aspera L."
+  ],
+  "Lithodora": [
+    "Lithodora fruticosa (L.) Griseb."
+  ],
+  "Humulus": [
+    "Humulus lupulus L."
+  ],
+  "Vaccaria": [
+    "Vaccaria hispanica (Mill.) Rauschert"
+  ],
+  "Moehringia": [
+    "Moehringia trinervia (L.) Clairv.",
+    "Moehringia ciliata (Scop.) Dalla Torre",
+    "Moehringia muscosa L."
+  ],
+  "Calendula": [
+    "Calendula officinalis L.",
+    "Calendula stellata Cav.",
+    "Calendula arvensis (Vaill.) L.",
+    "Calendula arvensis L.",
+    "Calendula arvensis M.Bieb."
+  ],
+  "Carthamus": [
+    "Carthamus lanatus L.",
+    "Carthamus tinctorius L.",
+    "Carthamus carduncellus L.",
+    "Carthamus mitissimus L."
+  ],
+  "Helminthotheca": [
+    "Helminthotheca echioides (L.) Holub"
+  ],
+  "Hyoseris": [
+    "Hyoseris radiata L."
+  ],
+  "Limbarda": [
+    "Limbarda crithmoides (L.) Dumort."
+  ],
+  "Sedum": [
+    "Sedum acre L.",
+    "Sedum album L.",
+    "Sedum brevifolium DC.",
+    "Sedum caeruleum L.",
+    "Sedum cepaea L.",
+    "Sedum dasyphyllum L.",
+    "Sedum forsterianum Sm.",
+    "Sedum hirsutum All.",
+    "Sedum rubens L.",
+    "Sedum sediforme (Jacq.) Pau",
+    "Sedum anglicum Huds.",
+    "Sedum rupestre L.",
+    "Sedum hispanicum L.",
+    "Sedum pachyphyllum Rose",
+    "Sedum dendroideum Moc. & Sessé ex DC.",
+    "Sedum sarmentosum Bunge",
+    "Sedum kamtschaticum Fisch. & C.A.Mey.",
+    "Sedum mexicanum Britton",
+    "Sedum ochroleucum Chaix",
+    "Sedum sexangulare L.",
+    "Sedum atratum L.",
+    "Sedum palmeri S.Watson",
+    "Sedum spathulifolium Hook.",
+    "Sedum ternatum Michx.",
+    "Sedum lineare Thunb.",
+    "Sedum morganianum E.Walther",
+    "Sedum palmeri S. Watson",
+    "Sedum adolphii Raym.-Hamet",
+    "Sedum burrito Moran",
+    "Sedum clavatum R.T. Clausen",
+    "Sedum japonicum Siebold ex Miq.",
+    "Sedum makinoi Maxim.",
+    "Sedum nussbaumerianum Bitter",
+    "Sedum rubrotinctum R.T. Clausen"
+  ],
+  "Alliaria": [
+    "Alliaria petiolata (M. Bieb.) Cavara & Grande",
+    "Alliaria petiolata (M.Bieb.) Cavara & Grande"
+  ],
+  "Acalypha": [
+    "Acalypha virginica L.",
+    "Acalypha wilkesiana Müll.Arg.",
+    "Acalypha indica L.",
+    "Acalypha hispida Burm.f."
+  ],
+  "Galega": [
+    "Galega officinalis L."
+  ],
+  "Punica": [
+    "Punica granatum L."
+  ],
+  "Alcea": [
+    "Alcea rosea L.",
+    "Alcea biennis Winterl"
+  ],
+  "Althaea": [
+    "Althaea cannabina L.",
+    "Althaea officinalis L."
+  ],
+  "Nymphaea": [
+    "Nymphaea alba L.",
+    "Nymphaea candida C.Presl",
+    "Nymphaea nouchali Burm.f.",
+    "Nymphaea odorata Aiton"
+  ],
+  "Adonis": [
+    "Adonis aestivalis L.",
+    "Adonis annua L.",
+    "Adonis vernalis L."
+  ],
+  "Anemone": [
+    "Anemone coronaria L.",
+    "Anemone hortensis L.",
+    "Anemone alpina L.",
+    "Anemone apennina L.",
+    "Anemone baldensis L.",
+    "Anemone hepatica L.",
+    "Anemone nemorosa L.",
+    "Anemone pulsatilla L.",
+    "Anemone rubra Lam.",
+    "Anemone sylvestris L.",
+    "Anemone trifolia L.",
+    "Anemone vernalis L.",
+    "Anemone hupehensis (Lemoine) Lemoine",
+    "Anemone narcissiflora L.",
+    "Anemone ranunculoides L.",
+    "Anemone blanda Schott & Kotschy",
+    "Anemone canadensis L.",
+    "Anemone virginiana L."
+  ],
+  "Oldenlandia": [
+    "Oldenlandia corymbosa L."
+  ],
+  "Hyoscyamus": [
+    "Hyoscyamus albus L.",
+    "Hyoscyamus niger L."
+  ],
+  "Daphne": [
+    "Daphne gnidium L.",
+    "Daphne laureola L.",
+    "Daphne alpina L.",
+    "Daphne cneorum L.",
+    "Daphne mezereum L.",
+    "Daphne odora Thunb."
+  ],
+  "Berula": [
+    "Berula erecta (Huds.) Coville"
+  ],
+  "Chaerophyllum": [
+    "Chaerophyllum temulum L.",
+    "Chaerophyllum aureum L.",
+    "Chaerophyllum hirsutum L.",
+    "Chaerophyllum bulbosum L."
+  ],
+  "Meum": [
+    "Meum athamanticum Jacq."
+  ],
+  "Thapsia": [
+    "Thapsia villosa L."
+  ],
+  "Centranthus": [
+    "Centranthus calcitrapae (L.) Dufr.",
+    "Centranthus angustifolius (Mill.) DC.",
+    "Centranthus ruber (L.) DC."
+  ],
+  "Pancratium": [
+    "Pancratium maritimum L.",
+    "Pancratium illyricum L."
+  ],
+  "Anthericum": [
+    "Anthericum liliago L.",
+    "Anthericum ramosum L."
+  ],
+  "Butomus": [
+    "Butomus umbellatus L."
+  ],
+  "Oncostema": [
+    "Oncostema peruviana (L.) Speta"
+  ],
+  "Ophrys": [
+    "Ophrys apifera Huds.",
+    "Ophrys fusca Link",
+    "Ophrys lutea Cav.",
+    "Ophrys scolopax Cav.",
+    "Ophrys speculum Link",
+    "Ophrys tenthredinifera Willd.",
+    "Ophrys insectifera L.",
+    "Ophrys aranifera Huds.",
+    "Ophrys bertolonii Moretti",
+    "Ophrys fuciflora (F.W.Schmidt) Moench",
+    "Ophrys lupercalis Devillers & Devillers-Tersch.",
+    "Ophrys passionis Sennen",
+    "Ophrys araneola sensu auct.plur.",
+    "Ophrys virescens Philippe"
+  ],
+  "Myosoton": [
+    "Myosoton aquaticum (L.) Moench"
+  ],
+  "Casuarina": [
+    "Casuarina cunninghamiana Miq.",
+    "Casuarina equisetifolia L."
+  ],
+  "Falcaria": [
+    "Falcaria vulgaris Bernh."
+  ],
+  "Epipactis": [
+    "Epipactis helleborine (L.) Crantz",
+    "Epipactis atrorubens (Hoffm.) Besser",
+    "Epipactis palustris (L.) Crantz"
+  ],
+  "Freesia": [
+    "Freesia refracta (Jacq.) Klatt",
+    "Freesia x hybrida L.H.Bailey",
+    "Freesia refracta (Jacq.) Eckl. ex Klatt",
+    "Freesia alba (G.L.Mey.) Grumbleton"
+  ],
+  "Schefflera": [
+    "Schefflera actinophylla (Endl.) Harms",
+    "Schefflera actinophylla Harms",
+    "Schefflera arboricola (Hayata) Merr."
+  ],
+  "Cenchrus": [
+    "Cenchrus setaceus (Forssk.) Morrone",
+    "Cenchrus ciliaris L.",
+    "Cenchrus longisetus M.C.Johnst."
+  ],
+  "Papaver": [
+    "Papaver argemone L.",
+    "Papaver hybridum L.",
+    "Papaver rhoeas L.",
+    "Papaver dubium L.",
+    "Papaver somniferum L.",
+    "Papaver alpinum L.",
+    "Papaver orientale L.",
+    "Papaver pseudoorientale (Fedde) Medw.",
+    "Papaver nudicaule L."
+  ],
+  "Daucus": [
+    "Daucus carota L."
+  ],
+  "Smilax": [
+    "Smilax aspera L.",
+    "Smilax rotundifolia L.",
+    "Smilax bona-nox L."
+  ],
+  "Secale": [
+    "Secale cereale L."
+  ],
+  "Phalaris": [
+    "Phalaris aquatica L.",
+    "Phalaris arundinacea L.",
+    "Phalaris canariensis L."
+  ],
+  "Lupinus": [
+    "Lupinus angustifolius L.",
+    "Lupinus luteus L.",
+    "Lupinus albus L.",
+    "Lupinus polyphyllus Lindl.",
+    "Lupinus arboreus Sims",
+    "Lupinus albifrons Benth."
+  ],
+  "Acacia": [
+    "Acacia dealbata Link",
+    "Acacia longifolia (Andrews) Willd.",
+    "Acacia mearnsii De Wild.",
+    "Acacia pycnantha Benth.",
+    "Acacia retinodes Schltdl.",
+    "Acacia melanoxylon R.Br.",
+    "Acacia saligna (Labill.) H.L.Wendl.",
+    "Acacia baileyana F.Muell.",
+    "Acacia heterophylla (Lam.) Willd."
+  ],
+  "Barbarea": [
+    "Barbarea verna (Mill.) Asch.",
+    "Barbarea vulgaris R.Br.",
+    "Barbarea orthoceras Ledeb."
+  ],
+  "Fragaria": [
+    "Fragaria vesca L.",
+    "Fragaria moschata Weston",
+    "Fragaria viridis Weston",
+    "Fragaria chiloensis (L.) Mill.",
+    "Fragaria × ananassa (Duchesne ex Weston) Duchesne ex Rozier"
+  ],
+  "Duchesnea": [
+    "Duchesnea indica (Jacks.) Focke",
+    "Duchesnea indica (Andrews) Teschem."
+  ],
+  "Tagetes": [
+    "Tagetes minuta L.",
+    "Tagetes patula L.",
+    "Tagetes erecta L.",
+    "Tagetes tenuifolia Cav."
+  ],
+  "Lapsana": [
+    "Lapsana communis L."
+  ],
+  "Trachelospermum": [
+    "Trachelospermum jasminoides (Lindl.) Lem."
+  ],
+  "Gymnosporia": [
+    "Gymnosporia putterlickioides Loes."
+  ],
+  "Mussaenda": [
+    "Mussaenda erythrophylla Schumach. & Thonn.",
+    "Mussaenda philippica A.Rich."
+  ],
+  "Morinda": [
+    "Morinda citrifolia L."
+  ],
+  "Gynura": [
+    "Gynura aurantiaca (Blume) DC.",
+    "Gynura aurantiaca (Blume) Sch.Bip. ex DC."
+  ],
+  "Triadica": [
+    "Triadica sebifera (L.) Small"
+  ],
+  "Petiveria": [
+    "Petiveria alliacea L."
+  ],
+  "Peperomia": [
+    "Peperomia pellucida (L.) Kunth",
+    "Peperomia magnoliifolia (Jacq.) A.Dietr.",
+    "Peperomia obtusifolia (L.) A.Dietr.",
+    "Peperomia quadrangularis (J.V.Thomps.) A.Dietr.",
+    "Peperomia rotundifolia (L.) Kunth",
+    "Peperomia serpens (Sw.) Loudon",
+    "Peperomia caperata Yunck.",
+    "Peperomia obtusifolia (L.) A. Dietr.",
+    "Peperomia argyreia (Hook.f.) E.Morren",
+    "Peperomia albovittata C. DC.",
+    "Peperomia ferreyrae Yunck.",
+    "Peperomia polybotrya Kunth",
+    "Peperomia prostrata B.S. Williams"
+  ],
+  "Cucurbita": [
+    "Cucurbita pepo L.",
+    "Cucurbita maxima Duchesne",
+    "Cucurbita moschata Duchesne"
+  ],
+  "Lagenaria": [
+    "Lagenaria siceraria (Molina) Standl."
+  ],
+  "Barringtonia": [
+    "Barringtonia asiatica (L.) Kurz"
+  ],
+  "Couroupita": [
+    "Couroupita guianensis Aubl."
+  ],
+  "Zamioculcas": [
+    "Zamioculcas zamiifolia (Lodd.) Engl."
+  ],
+  "Phedimus": [
+    "Phedimus aizoon (L.) 't Hart",
+    "Phedimus spurius (M.Bieb) 't Hart"
+  ],
+  "Cereus": [
+    "Cereus jamacaru DC.",
+    "Cereus hexagonus (L.) Mill.",
+    "Cereus repandus (L.) Mill."
+  ],
+  "Atocion": [
+    "Atocion rupestre (L.) B.Oxelman"
+  ],
+  "Aegopodium": [
+    "Aegopodium podagraria L."
+  ],
+  "Perovskia": [
+    "Perovskia abrotanoides Kar.",
+    "Perovskia atriplicifolia Benth."
+  ],
+  "Erechtites": [
+    "Erechtites hieraciifolius (L.) Raf. ex DC."
+  ],
+  "Collomia": [
+    "Collomia grandiflora Douglas ex Lindl."
+  ],
+  "Cytinus": [
+    "Cytinus hypocistis (L.) L.",
+    "Cytinus ruber Fritsch"
+  ],
+  "Dorotheanthus": [
+    "Dorotheanthus bellidiformis (Burm.f.) N.E.Br."
+  ],
+  "Dryas": [
+    "Dryas octopetala L."
+  ],
+  "Empetrum": [
+    "Empetrum nigrum L."
+  ],
+  "Erucastrum": [
+    "Erucastrum gallicum (Willd.) O.E.Schulz",
+    "Erucastrum incanum (L.) W.D.J.Koch",
+    "Erucastrum nasturtiifolium (Poir.) O.E.Schulz"
+  ],
+  "Geropogon": [
+    "Geropogon hybridus (L.) Sch.Bip."
+  ],
+  "Gomphocarpus": [
+    "Gomphocarpus fruticosus (L.) R.Br.",
+    "Gomphocarpus physocarpus E.Mey."
+  ],
+  "Guizotia": [
+    "Guizotia abyssinica (L.f.) Cass."
+  ],
+  "Hebe": [
+    "Hebe andersonii (Lindl. & Paxton) Cockayne",
+    "Hebe salicifolia (G.Forst.) Pennell",
+    "Hebe andersonii (Lindl. & J. Paxton) Cockayne"
+  ],
+  "Hippophae": [
+    "Hippophae rhamnoides L."
+  ],
+  "Dierama": [
+    "Dierama pulcherrimum (Hook.f.) Baker"
+  ],
+  "Kniphofia": [
+    "Kniphofia uvaria (L.) Hook.",
+    "Kniphofia uvaria (L.) Oken"
+  ],
+  "Lathraea": [
+    "Lathraea clandestina L.",
+    "Lathraea squamaria L."
+  ],
+  "Limnanthes": [
+    "Limnanthes douglasii R.Br."
+  ],
+  "Liriodendron": [
+    "Liriodendron tulipifera L."
+  ],
+  "Maianthemum": [
+    "Maianthemum bifolium (L.) F.W.Schmidt",
+    "Maianthemum canadense Desf.",
+    "Maianthemum racemosum (L.) Link",
+    "Maianthemum stellatum (L.) Link"
+  ],
+  "Narthecium": [
+    "Narthecium ossifragum (L.) Huds."
+  ],
+  "Neotinea": [
+    "Neotinea ustulata (L.) R.M.Bateman, Pridgeon & M.W.Chase",
+    "Neotinea tridentata (Scop.) R.M.Bateman, Pridgeon & M.W.Chase"
+  ],
+  "Noccaea": [
+    "Noccaea caerulescens (J.Presl & C.Presl) F.K.Mey.",
+    "Noccaea rotundifolia (L.) Moench"
+  ],
+  "Nymphoides": [
+    "Nymphoides peltata (S.G.Gmel.) Kuntze"
+  ],
+  "Oreopteris": [
+    "Oreopteris limbosperma (Bellardi ex All.) Holub"
+  ],
+  "Angelica": [
+    "Angelica sylvestris L.",
+    "Angelica archangelica L.",
+    "Angelica atropurpurea L."
+  ],
+  "Pyracantha": [
+    "Pyracantha coccinea M.Roem.",
+    "Pyracantha rogersiana (A.B.Jacks.) Coltm.-Rog.",
+    "Pyracantha coccinea M. Roem."
+  ],
+  "Holodiscus": [
+    "Holodiscus discolor (Pursh) Maxim."
+  ],
+  "Sagittaria": [
+    "Sagittaria latifolia Willd.",
+    "Sagittaria sagittifolia L."
+  ],
+  "Diascia": [
+    "Diascia rigescens E.Mey. ex Benth."
+  ],
+  "Metasequoia": [
+    "Metasequoia glyptostroboides Hu & W.C.Cheng"
+  ],
+  "Telekia": [
+    "Telekia speciosa (Schreb.) Baumg."
+  ],
+  "Viscaria": [
+    "Viscaria vulgaris Bernh."
+  ],
+  "Adenostyles": [
+    "Adenostyles alpina (L.) Bluff & Fingerh.",
+    "Adenostyles alliariae (Gouan) A.Kern.",
+    "Adenostyles leucophylla (Willd.) Rchb."
+  ],
+  "Cymbalaria": [
+    "Cymbalaria muralis P.Gaertn., B.Mey. & Scherb."
+  ],
+  "Honckenya": [
+    "Honckenya peploides (L.) Ehrh."
+  ],
+  "Cobaea": [
+    "Cobaea scandens Cav."
+  ],
+  "Calycanthus": [
+    "Calycanthus floridus L."
+  ],
+  "Aralia": [
+    "Aralia elata (Miq.) Seem.",
+    "Aralia nudicaulis L.",
+    "Aralia racemosa L.",
+    "Aralia spinosa L."
+  ],
+  "Clethra": [
+    "Clethra alnifolia L."
+  ],
+  "Nothofagus": [
+    "Nothofagus antarctica (G.Forst.) Oerst."
+  ],
+  "Tetraclinis": [
+    "Tetraclinis articulata (Vahl) Mast."
+  ],
+  "Bocoa": [
+    "Bocoa prouacensis Aubl."
+  ],
+  "Anthurium": [
+    "Anthurium hookeri Kunth",
+    "Anthurium andraeanum Linden ex André",
+    "Anthurium clarinervium Matuda"
+  ],
+  "Crotalaria": [
+    "Crotalaria retusa L.",
+    "Crotalaria pallida Aiton"
+  ],
+  "Pereskia": [
+    "Pereskia bleo (Kunth) DC.",
+    "Pereskia grandifolia Haw.",
+    "Pereskia aculeata Mill."
+  ],
+  "Cryptostegia": [
+    "Cryptostegia madagascariensis Bojer ex Decne."
+  ],
+  "Asystasia": [
+    "Asystasia gangetica (L.) T.Anderson"
+  ],
+  "Breynia": [
+    "Breynia disticha J.R.Forst. & G.Forst."
+  ],
+  "Kigelia": [
+    "Kigelia africana (Lam.) Benth."
+  ],
+  "Alocasia": [
+    "Alocasia cucullata (Lour.) G.Don",
+    "Alocasia longiloba Miq.",
+    "Alocasia macrorrhizos (L.) G.Don",
+    "Alocasia micholitziana Sander",
+    "Alocasia odora (Lindl.) K.Koch",
+    "Alocasia sanderiana W.Bull",
+    "Alocasia zebrina Schott ex Van Houtte"
+  ],
+  "Pongamia": [
+    "Pongamia pinnata (L.) Pierre"
+  ],
+  "Strongylodon": [
+    "Strongylodon macrobotrys A.Gray"
+  ],
+  "Trimezia": [
+    "Trimezia martinicensis (Jacq.) Herb."
+  ],
+  "Bismarckia": [
+    "Bismarckia nobilis Hildebr. & H.Wendl."
+  ],
+  "Aphelandra": [
+    "Aphelandra squarrosa Nees"
+  ],
+  "Dendrobium": [
+    "Dendrobium nobile Lindl.",
+    "Dendrobium victoriae-reginae Loher"
+  ],
+  "Nandina": [
+    "Nandina domestica Thunb."
+  ],
+  "Conoclinium": [
+    "Conoclinium coelestinum (L.) DC."
+  ],
+  "Diervilla": [
+    "Diervilla lonicera Mill."
+  ],
+  "Mertensia": [
+    "Mertensia maritima (L.) Gray",
+    "Mertensia virginica (L.) Pers. ex Link"
+  ],
+  "Nepenthes": [
+    "Nepenthes vieillardii Hook. f."
+  ],
+  "Lithops": [
+    "Lithops pseudotruncatella N.E.Br.",
+    "Lithops spp."
+  ],
+  "Fittonia": [
+    "Fittonia albivenis (Lindl. ex Veitch) Brummitt"
+  ],
+  "Rumohra": [
+    "Rumohra adiantiformis (G. Forst.) Ching"
+  ],
+  "Lycoris": [
+    "Lycoris radiata (L'Hér.) Herb.",
+    "Lycoris squamigera Maxim."
+  ],
+  "Garrya": [
+    "Garrya elliptica Douglas ex Lindl."
+  ],
+  "Loropetalum": [
+    "Loropetalum chinense (R. Br.) Oliv."
+  ],
+  "Liriope": [
+    "Liriope muscari (Decne.) L.H.Bailey",
+    "Liriope muscari (Decne.) L.H. Bailey"
+  ],
+  "Vanilla": [
+    "Vanilla planifolia Jacks. ex Andrews"
+  ],
+  "Zamia": [
+    "Zamia furfuracea L.f. ex Aiton"
+  ],
+  "Prosopis": [
+    "Prosopis glandulosa Torr."
+  ],
+  "Pilosocereus": [
+    "Pilosocereus pachycladus F. Ritter"
+  ],
+  "Selenicereus": [
+    "Selenicereus anthonyanus (Alexander) D.R. Hunt"
+  ],
+  "Cyanotis": [
+    "Cyanotis somaliensis C.B.Clarke"
+  ],
+  "Leucophyta": [
+    "Leucophyta brownii Cass."
+  ],
+  "Melampodium": [
+    "Melampodium divaricatum (Rich. ex Rich.) DC."
+  ],
+  "Othonna": [
+    "Othonna capensis L.H.Bailey"
+  ],
+  "Hepatica": [
+    "Hepatica nobilis Mill."
+  ]
+}
