@@ -87,8 +87,9 @@ class HierarchicalClassifier(nn.Module):
         _, level2 = self(images)
         return nn.Softmax(dim=-1)(level2)
 
-    def train_step(self, images, y1_true, y2_true, optimizer, lr_scheduler=None):
+    def train_step(self, images, y_true, optimizer, lr_scheduler=None):
         images = images.to(next(self.parameters()).device)
+        y1_true, y2_true = y_true
         y1_true = y1_true.to(next(self.parameters()).device)
         y2_true = y2_true.to(next(self.parameters()).device)
 
