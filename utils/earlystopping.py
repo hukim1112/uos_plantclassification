@@ -3,7 +3,7 @@ import numpy as np
 
 class EarlyStopping:
     """주어진 patience 이후로 validation loss가 개선되지 않으면 학습을 조기 중지"""
-    def __init__(self, patience=7, verbose=True, delta=0, path='checkpoint.pt'):
+    def __init__(self, patience=7, verbose=True, delta=0, is_loss=True, path='checkpoint.pt'):
         """
         Args:
             patience (int): validation loss가 개선된 후 기다리는 기간
@@ -20,30 +20,40 @@ class EarlyStopping:
         self.counter = 0
         self.best_score = None
         self.early_stop = False
-        self.val_loss_min = np.Inf
         self.delta = delta
+        self.is_loss = is_loss
         self.path = path
+        if is_loss:
+            self.previous_best = np.Inf
+        else:
+            self.previous_best = 0.0
 
-    def __call__(self, val_loss, epoch, model, optimizer):
 
-        score = -val_loss
+    def __call__(self, metric, epoch, model, optimizer):
+        if self.is_loss:
+            score = -metric
+            delta = -self.delta
+        else:
+            score = metric
+            delta = self.delta
+
 
         if self.best_score is None:
             self.best_score = score
-            self.save_checkpoint(val_loss, epoch, model, optimizer)
-        elif score < self.best_score + self.delta:
+            self.save_checkpoint(metric, epoch, model, optimizer)
+        elif score+delta < self.best_score:
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(val_loss, epoch, model, optimizer)
+            self.save_checkpoint(metric, epoch, model, optimizer)
             self.counter = 0
 
-    def save_checkpoint(self, val_loss, epoch, model, optimizer):
-        '''validation loss가 감소하면 모델을 저장한다.'''
+    def save_checkpoint(self, metric, epoch, model, optimizer, minimum=True):
+        '''validation loss가 감소하거나(검증정확도의 경우 증가) 모델을 저장한다.'''
         if self.verbose:
-            print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
+            print(f'Metric improved ({self.previous_best:.6f} --> {metric:.6f}).  Saving model ...')
         model.save(epoch, self.path, optimizer=optimizer)
-        self.val_loss_min = val_loss
+        self.previous_best = metric

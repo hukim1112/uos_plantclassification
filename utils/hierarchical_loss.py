@@ -11,16 +11,32 @@ class HierarchicalLossNetwork:
         self.total_level = total_level
         self.alpha = alpha
         self.beta = beta
+        self.step_count = 0
         self.p_loss = p_loss
         self.fine_to_coarse = fine_to_coarse
         self.device = device
 
     def __call__(self, predictions, true_labels):
+        self.step_count += 1
+        if self.beta == "scheduler":
+            self.beta_scheduler()
         dloss = self.calculate_dloss(predictions, true_labels)
         lloss = self.calculate_lloss(predictions, true_labels)
         total_loss = lloss + dloss
         return total_loss
     
+    def beta_scheduler(self):
+        if self.step_count<501:
+            self.beta = 0.0
+        elif self.step_count <1001:
+            self.beta = 0.2
+        elif self.step_count <1501:
+            self.beta = 0.4        
+        elif self.step_count <2001:
+            self.beta = 0.6        
+        else:
+            self.beta = 0.8
+                
     def calculate_lloss(self, predictions, true_labels):
         '''Calculates the layer loss.
         '''

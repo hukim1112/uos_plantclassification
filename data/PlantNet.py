@@ -13,13 +13,15 @@ class PlantNet(Dataset):
         self.split = split
         self.shuffle = shuffle
         self.transform = transform
-        self.label_to_class, self.class_to_name, self.name_to_label = self.labels()
+        self.labels()
         self.filelist = self.get_filelist()
 
     def get_filelist(self):
         dir_path = join(self.root, "images", self.split)
-        sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub))]
-
+        labels = self.label_to_class.keys()
+        #sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub))]
+        sub_paths = [join(dir_path, sub) for sub in labels if isdir(join(dir_path, sub))]
+        
         filelist = []
         for sub_path in sub_paths:
             files = [ join(sub_path, _file)  for _file in os.listdir(sub_path) if isfile(join(sub_path, _file))]
@@ -28,25 +30,41 @@ class PlantNet(Dataset):
             shuffle(filelist)
         return filelist
 
-    def labels(self):
+    def get_specific_labels(self, labels):
+        dir_path = join(self.root, "images", self.split)
+        sub_paths = [join(dir_path, sub) for sub in labels if isdir(join(dir_path, sub))]
+
+        filelist = []
+        for sub_path in sub_paths:
+            files = [ join(sub_path, _file)  for _file in os.listdir(sub_path) if isfile(join(sub_path, _file))]
+            filelist += files
+        if self.shuffle == True:
+            shuffle(filelist)
+        return filelist        
+
+    def labels(self, selected_species=None):
         # example.
         # label : "1355868" 
         # name : "Lactuca virosa L."
         # class : 0
-
+        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
+            label_to_name = json.load(file) #label => name
+        if selected_species is not None:
+            label_to_name = dict([(k,v) for k,v in label_to_name.items() if v in selected_species])
+                        
         label_to_class = {} # label => class
         class_to_name = {} # class => name
         name_to_label = {} # name => label
-
-        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
-            label_to_name = json.load(file) #label => name
         
         for label, name in zip(label_to_name.keys(), label_to_name.values()):
             class_to_name[len(label_to_class)] = name
             label_to_class[label] = len(label_to_class)
             name_to_label[name] = label
-        return label_to_class, class_to_name, name_to_label
-
+        
+        self.class_to_name = class_to_name
+        self.label_to_class = label_to_class
+        self.name_to_label = name_to_label
+        
     def __len__(self):
         return len(self.filelist)
 
@@ -64,12 +82,10 @@ class PlantNet(Dataset):
         return image, class_id
 
 class HierarchicalPlantNet(PlantNet):
-    def __init__(self, root, split, shuffle=False, transform=None):
+    def __init__(self, root, split, fine_to_coarse, shuffle=False, transform=None):
         super().__init__(root, split, shuffle, transform)
-        with open(join("data/plantnet", "fine_to_coarse.json"), 'r') as st_json:
-                fine_to_coarse = json.load(st_json)
         self.fine_to_coarse = fine_to_coarse
-        
+
     def __getitem__(self, idx):
         img_path = self.filelist[idx]
         image = cv2.imread(img_path)
@@ -118,18 +134,20 @@ class MiniPlantNet(PlantNet):
         super().__init__(root, split, shuffle=False, transform=None)
         self.minimum = minimum_samples
 
-    def labels(self): #change labels to new target classes
+    def labels(self, selected_species=None): #change labels to new target classes
         dir_path = join(self.root, "images", "train")
         sub_paths = [join(dir_path, sub) for sub in os.listdir(dir_path) if isdir(join(dir_path, sub))]
         target_labels = [os.path.basename(sub_path) for sub_path in sub_paths if len(os.listdir(sub_path))>=self.minimum]
 
+        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
+            label_to_name = json.load(file) #label => name
+        if selected_species is not None:
+            label_to_name = dict([(k,v) for k,v in label_to_name.items() if v in selected_species])
+            
         label_to_class = {} # label => class
         class_to_name = {} # class => name
         name_to_label = {} # name => label
 
-        with open(join(self.root, "plantnet300K_species_id_2_name.json"), 'r') as file:
-            label_to_name = json.load(file) #label => name
-        
         for label, name in zip(label_to_name.keys(), label_to_name.values()):
             if label not in target_labels: 
                 continue

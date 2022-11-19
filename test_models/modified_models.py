@@ -71,16 +71,26 @@ class HierarchicalClassifier(nn.Module):
         self.loss_fn = loss_fn
         self.baseline = baseline
 
-        self.linear_lvl1 = nn.Linear(1792, num_classes[0])
-        self.linear_lvl2 = nn.Linear(1792, num_classes[1])
-
-        self.softmax_reg1 = nn.Linear(num_classes[0], num_classes[0])
-        self.softmax_reg2 = nn.Linear(num_classes[0]+num_classes[1], num_classes[1])
-
+        self.lvl1_classifier = nn.Linear(1792, num_classes[0])
+        self.channel_attention = nn.Linear(num_classes[0], 480)
+        self.sigmoid = nn.Sigmoid()
+        self.linear_lvl2 = nn.Linear(1792, 480)
+        self.lvl2_classifier = nn.Linear(480+num_classes[0], num_classes[1])
+        
     def forward(self, images):
         x = self.baseline.embedding(self.baseline.patch_embedding(images))
-        level_1 = self.softmax_reg1(self.linear_lvl1(x))
-        level_2 = self.softmax_reg2(torch.cat((level_1, self.linear_lvl2(x)), dim=1))
+        
+        #x=>level1=>parent info
+        #1792 => 960 => non-linear => lvl1_classifier
+        
+        #            => 480 => 
+        #     => 960 => 480 => concat => 960 => non-linear => lvl2_classifier
+        
+        level_1 = self.lvl1_classifier(x)
+        
+        attention_w = self.sigmoid(self.channel_attention(level_1))       
+        lvl2_rep = torch.cat((level_1, attention_w*self.linear_lvl2(x)), dim=-1)
+        level_2 = self.lvl2_classifier(lvl2_rep) #attetion weight*level2 rep
         return level_1, level_2
     
     def predict(self, images):
@@ -137,3 +147,26 @@ class HierarchicalClassifier(nn.Module):
             if optimizer is not None:
                 optimizer.load_state_dict(data['optimizer'])
             return optimizer
+
+
+class HierarchicalClassifier_v2(HierarchicalClassifier):
+    def __init__(self, loss_fn, baseline, num_classes):
+        super(HierarchicalClassifier_v2, self).__init__(loss_fn, baseline, num_classes)
+        self.channel_attention = nn.Linear(num_classes[0], 1792)
+        self.lvl2_classifier = nn.Linear(1792+num_classes[0], num_classes[1])
+        
+    def forward(self, images):
+        x = self.baseline.embedding(self.baseline.patch_embedding(images))
+        
+        #x=>level1=>parent info
+        #1792 => 960 => non-linear => lvl1_classifier
+        
+        #            => 480 => 
+        #     => 960 => 480 => concat => 960 => non-linear => lvl2_classifier
+        
+        level_1 = self.lvl1_classifier(x)
+        
+        attention_w = self.sigmoid(self.channel_attention(level_1))       
+        lvl2_rep = torch.cat((level_1, attention_w*x), dim=-1)
+        level_2 = self.lvl2_classifier(lvl2_rep) #attetion weight*level2 rep
+        return level_1, level_2

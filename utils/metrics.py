@@ -3,11 +3,13 @@ import pandas as pd
 from os.path import join
 
 class Metric_tracker():
-    def __init__(self, split, class_to_name, log_dir, set_k=None):
+    def __init__(self, split, class_to_name, log_dir, set_k=None, hierarchical=False, fine_to_coarse=None):
         self.split = split
         self.class_to_name = class_to_name
         self.log_dir = log_dir
         self.set_k = set_k
+        self.hierarchical = hierarchical
+        self.fine_to_coarse = fine_to_coarse
         if self.set_k is not None:
             if 1 not in self.set_k:
                 self.set_k.append(1)
@@ -23,7 +25,11 @@ class Metric_tracker():
         for k in self.set_k:
             self.topk_tp[k] = torch.zeros(len(self.class_to_name), dtype=torch.int)
         self.losses = []
-
+        if self.fine_to_coarse is not None:
+            self.coarse_tp = torch.zeros(len(set(self.fine_to_coarse.values())), dtype=torch.int)
+        else:
+            self.coarse_tp = torch.zeros(1, dtype=torch.int)
+            
     def update_topk_TruePositives(self, y_true, y_pred):
         predicted_classes = torch.argsort(y_pred, axis=-1, descending=True)
         for k in self.set_k:
@@ -37,10 +43,25 @@ class Metric_tracker():
                     top_k = pred[:k]
                     self.topk_tp[k][gt.item()]+=torch.sum(gt == top_k).item()
 
+    def update_coarse_TruePositives(self, y_true, y_pred):
+        predicted_classes = torch.argsort(y_pred, axis=-1, descending=True)
+        for gt, pred in zip(y_true, predicted_classes):
+            pred_coarse_id = self.fine_to_coarse[str(pred[0].item())]
+            gt_coarse_id = self.fine_to_coarse[str(gt.item())]
+            self.coarse_tp[gt_coarse_id]+=(pred_coarse_id == gt_coarse_id)
+
     def update(self, loss, y_true, y_pred):
-        y_true = y_true.cpu()
-        y_pred = y_pred.cpu()
+        if self.hierarchical:
+            y_true = y_true[1].cpu()
+            y_pred = y_pred[1].cpu()            
+        else:
+            y_true = y_true.cpu()
+            y_pred = y_pred.cpu()
         self.update_topk_TruePositives(y_true, y_pred)
+        
+        if self.fine_to_coarse is not None:
+            self.update_coarse_TruePositives(y_true, y_pred)
+        
         self.losses.append(loss)
 
     def result(self):
@@ -49,26 +70,35 @@ class Metric_tracker():
         recalls = self.cal_recall(samples_per_class)
         topk_acc = self.cal_topk_accuracy(samples_per_class) 
         epoch_loss = self.cal_epoch_loss()
-        return samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss
+        coarse_acc = self.cal_coarse_accuracy(samples_per_class)
+        return {"samples_per_class":samples_per_class,
+                "zero_classes":zero_classes,
+                "precisions": precisions,
+                "recalls": recalls,
+                "topk_acc": topk_acc,
+                "coarse_acc": coarse_acc,
+                "epoch_loss": epoch_loss}
 
     def to_writer(self, writer, epoch, optimizer=None):
-        samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss = self.result()
-        writer.add_scalar(f"Loss/{self.split}", epoch_loss.item(), epoch)
-        writer.add_scalar(f"acc/{self.split}", topk_acc[1].item(), epoch)
-        writer.add_scalar(f"balanced_acc/{self.split}", torch.mean(recalls).item(), epoch)
+        result = self.result()
+        writer.add_scalar(f"Loss/{self.split}", result["epoch_loss"].item(), epoch)
+        writer.add_scalar(f"acc/{self.split}", result["topk_acc"][1].item(), epoch)
+        writer.add_scalar(f"balanced_acc/{self.split}", torch.mean(result["recalls"]).item(), epoch)
+        writer.add_scalar(f"coarse_acc/{self.split}", result["coarse_acc"].item(), epoch)
         for k in self.set_k:
-            writer.add_scalar(f"top-{k} acc/{self.split}", topk_acc[k].item(), epoch)
+            writer.add_scalar(f"top-{k} acc/{self.split}", result["topk_acc"][k].item(), epoch)
         if optimizer is not None:
             writer.add_scalar(f"learning_rate/{self.split}", optimizer.param_groups[0]["lr"], epoch)
 
     def to_csv(self, path):
-        samples_per_class, zero_classes, precisions, recalls, topk_acc, epoch_loss = self.result()
+        result = self.result()
+        
         df1 = pd.DataFrame({"name" : list(self.class_to_name.values()), 
-                           "samples_per_class" : samples_per_class.numpy(),
-                           "precision" : precisions.numpy(),
-                           "recall" : recalls.numpy()})
-        df2 = pd.DataFrame({"name" : [k for k in self.set_k]+["balanced_acc", "loss"], 
-                           "metric" : [topk_acc[k] for k in self.set_k]+[torch.mean(recalls).item(), epoch_loss.item()]})
+                           "samples_per_class" : result["samples_per_class"].numpy(),
+                           "precisions" : result["precisions"].numpy(),
+                           "recalls" : result["recalls"].numpy()})
+        df2 = pd.DataFrame({"name" : [k for k in self.set_k]+["balanced_acc", "coarse_acc", "loss"], 
+                           "metric" : [result["topk_acc"][k] for k in self.set_k]+[torch.mean(result["recalls"]).item(), result["coarse_acc"].item(), result["epoch_loss"].item()]})
         df1.to_csv(join(path, f"categorical_metrics_{self.split}.csv"))
         df2.to_csv(join(path, f"overall_metric_{self.split}.csv"))
 
@@ -87,6 +117,10 @@ class Metric_tracker():
     def cal_recall(self, samples_per_class):
         return torch.div(self.topk_tp[1], samples_per_class)
 
+    def cal_coarse_accuracy(self, samples_per_class):
+        coarse_acc = torch.div( torch.sum(self.coarse_tp), torch.sum(samples_per_class))
+        return coarse_acc
+    
     def cal_topk_accuracy(self, samples_per_class):
         topk_acc = {}
         for k in self.set_k:
