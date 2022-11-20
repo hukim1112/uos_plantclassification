@@ -71,7 +71,7 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
         else:
             raise ValueError(f"Wrong model name {MODEL}")
 
-        if LOSS == "no_depent_loss":
+        if LOSS == "no_dependent_loss":
             loss = NO_HC_DEPENDENCY
         elif LOSS == "DLN":
             loss = HierarchicalLossNetwork
@@ -108,7 +108,7 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
                     param.requires_grad = False           
     
     if MODE == "train":    
-        optimizer = AdamW(model.parameters(), lr=1e-4) #get your optimizer
+        optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer
         lr_scheduler = None #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1E-6) #get your lr scheduler
         early_stopping = EarlyStopping(patience=10, path=weight_path)
         model.train()
