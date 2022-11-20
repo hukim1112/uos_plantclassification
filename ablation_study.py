@@ -19,7 +19,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 #Model import
 from models import EfficientB4, HierarchicalClassifier
-from test_models.ablation_models import TWO_HEAD, TWO_HEAD_CONCAT, 
+from test_models.ablation_models import TWO_HEAD, TWO_HEAD_CONCAT, MDHC
 #Loss import
 from test_models.ablation_loss import HierarchicalLossNetwork, MHLN, NO_HC_DEPENDENCY
 
@@ -108,8 +108,8 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
                     param.requires_grad = False           
     
     if MODE == "train":    
-        optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer
-        lr_scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1E-6) #get your lr scheduler
+        optimizer = AdamW(model.parameters(), lr=1e-4) #get your optimizer
+        lr_scheduler = None #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1E-6) #get your lr scheduler
         early_stopping = EarlyStopping(patience=10, path=weight_path)
         model.train()
         metrics["train"].reset()
@@ -145,9 +145,10 @@ if __name__ == "__main__":
     # Another is a optional argument(--foo or -foo) and can be optionally input as the name.
     
     EXPEMENT_LIST = ["flat", "two_head", "two_head_concat", "DHC", "MDHC", "MDHC_focal"]
-    parser.add_argument('experiment', type=str,
+    
+    parser.add_argument('experiment', type=int,
                         metavar='experiment',
-                        choices=list(range(len(EXPEMENT_LIST)))
+                        choices=list(range(len(EXPEMENT_LIST))),
                         help='What is the exp name?')     
     parser.add_argument('mode', type=str,
                         metavar='mode',
@@ -198,32 +199,5 @@ if __name__ == "__main__":
         else:
             raise ValueError(f"Wrong EXP_NAME : {EXP_NAME}. PROGRAM EXIT.")
         test_ablation_model(MODE, MODEL=MODEL, LOSS=LOSS, hierarchy=hierarchy, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
-    
-    '''
-    args = parser.parse_args()
-    device = f"cuda:{args.device}"
-    test_name = "test_MDHC_debug" #args.test_name
-    exp_name = args.exp_name
-    finetune = False #args.finetune
-    model_type = args.model_type
-    metric_func = metric_to_acc
-    beta = "scheduler"
-    print(device, test_name, exp_name, finetune, model_type)
-    
-    # device = "cuda:0"
-    # test_name = "modified_DHC"
-    # finetune = False
-    # metric_func = metric_to_acc
-    
-    log_dir = f"/home/files/experiments/ablation_test/{test_name}/{exp_name}/"
-    if model_type=="debug1":   
-        test_modified_MDHC_debug1(log_dir, finetune, metric_func, beta=beta, device=device) 
-    elif model_type=="debug2":
-        test_modified_MDHC_debug2(log_dir, finetune, metric_func, beta=beta, device=device)
-    else:
-        print("wrong loss type")
-    '''
-
-
 
 
