@@ -148,29 +148,30 @@ class HierarchicalClassifier(nn.Module):
                 optimizer.load_state_dict(data['optimizer'])
             return optimizer
 
-
-class HierarchicalClassifier_v2(HierarchicalClassifier):
+class MDHC(HierarchicalClassifier):
     def __init__(self, loss_fn, baseline, num_classes):
-        super(HierarchicalClassifier_v2, self).__init__(loss_fn, baseline, num_classes)
+        super(MDHC, self).__init__(loss_fn, baseline, num_classes)
+        self.lvl1_classifier = nn.Linear(1792, num_classes[0])
         self.channel_attention = nn.Linear(num_classes[0], 1792)
         self.lvl2_classifier = nn.Linear(1792+num_classes[0], num_classes[1])
-        
+        self.lvl1_rep = nn.Sequential(nn.Linear(num_classes[0], num_classes[0]),
+                                      nn.ReLU())
     def forward(self, images):
         x = self.baseline.embedding(self.baseline.patch_embedding(images))
                
         level_1 = self.lvl1_classifier(x)
+        lvl1_rep = self.lvl1_rep(level_1)
+        attention_w = self.sigmoid(self.channel_attention(lvl1_rep))
         
-        attention_w = self.sigmoid(self.channel_attention(level_1))       
-        lvl2_rep = torch.cat((level_1, attention_w*x), dim=-1)
-        level_2 = self.lvl2_classifier(lvl2_rep) #attetion weight*level2 rep
+        lvl2_rep = torch.cat( (lvl1_rep, attention_w*x), dim=-1) #weighted feature + coarse feature
+        level_2 = self.lvl2_classifier(lvl2_rep) 
         return level_1, level_2
     
-class HierarchicalClassifier_v3(HierarchicalClassifier):
+class TWO_HEAD(HierarchicalClassifier):
     def __init__(self, loss_fn, baseline, num_classes):
-        super(HierarchicalClassifier_v3, self).__init__(loss_fn, baseline, num_classes)
-        #self.channel_attention = nn.Linear(num_classes[0], 1792)
-        self.lvl2_classifier = nn.Linear(1792, num_classes[1])
-        
+        super(TWO_HEAD, self).__init__(loss_fn, baseline, num_classes)
+        self.lvl1_classifier = nn.Linear(1792, num_classes[0])
+        self.lvl2_classifier = nn.Linear(1792, num_classes[1])        
     def forward(self, images):
         x = self.baseline.embedding(self.baseline.patch_embedding(images))
                
@@ -178,16 +179,17 @@ class HierarchicalClassifier_v3(HierarchicalClassifier):
         level_2 = self.lvl2_classifier(x)
         return level_1, level_2
     
-class HierarchicalClassifier_v4(HierarchicalClassifier):
+class TWO_HEAD_CONCAT(HierarchicalClassifier):
     def __init__(self, loss_fn, baseline, num_classes):
-        super(HierarchicalClassifier_v4, self).__init__(loss_fn, baseline, num_classes)
+        super(TWO_HEAD_CONCAT, self).__init__(loss_fn, baseline, num_classes)
+        self.lvl1_classifier = nn.Linear(1792, num_classes[0])
         self.lvl2_classifier = nn.Linear(1792+num_classes[0], num_classes[1])
-        
+        self.lvl1_rep = nn.Sequential(nn.Linear(num_classes[0], num_classes[0]),
+                                      nn.ReLU())        
     def forward(self, images):
         x = self.baseline.embedding(self.baseline.patch_embedding(images))
                
         level_1 = self.lvl1_classifier(x)
-        #attention_w = self.sigmoid(self.channel_attention(level_1))       
-        lvl2_rep = torch.cat((level_1, x), dim=-1)
+        lvl2_rep = torch.cat((self.lvl1_rep(level_1), x), dim=-1)
         level_2 = self.lvl2_classifier(lvl2_rep) #attetion weight*level2 rep
         return level_1, level_2
