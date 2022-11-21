@@ -40,7 +40,6 @@ def metric_to_acc(metric):
 def metric_to_bal_acc(metric):
     return torch.mean(metric.result()["recalls"] ).item()
 
-
 def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_func, device):
     os.makedirs(log_dir, exist_ok=True)
     weight_path = f"{log_dir}/checkpoint.pt"
@@ -87,7 +86,7 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
                 if 'baseline' in name:
                     param.requires_grad = False
                 else:
-                    param.requires_grad = True            
+                    param.requires_grad = True                    
    
     else: #it means flat classification
         print(f"hierarchy is {hierarchy}")
@@ -109,8 +108,9 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
     
     if MODE == "train":    
         optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer
-        lr_scheduler = None #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1E-6) #get your lr scheduler
-        early_stopping = EarlyStopping(patience=10, path=weight_path)
+        lr_scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1E-6) #get your lr scheduler
+        
+        early_stopping = EarlyStopping(patience=10, is_loss=False, path=weight_path)
         model.train()
         metrics["train"].reset()
         writer = SummaryWriter(log_dir=log_dir)
@@ -122,6 +122,7 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
             metrics["train"].to_writer(writer, epoch) #tensorboard에 기록
             metrics["val"].to_writer(writer, epoch) #tensorboard에 기록
 
+            
             acc = metric_func(metrics["val"])
             early_stopping(acc, epoch, model, optimizer) #early stopper monitors validation loss and save your model. It stops training process with Its stop condition.
             if early_stopping.early_stop:
@@ -133,7 +134,9 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
         metrics["test"].to_csv(log_dir)
 
     elif MODE == "test":
+        optimizer = AdamW(model.parameters(), lr=1e-3) #get your optimizer
         optimizer = model.load(weight_path, optimizer) # load Its the best checkpoint.
+        print(f"The lastest checkpoint's epoch : {model.epoch}")
         #test process
         test_epoch(model, data_loaders["test"], metrics["test"])
         metrics["test"].to_csv(log_dir)        
@@ -144,7 +147,7 @@ if __name__ == "__main__":
     # No dash argument is a positional argument and it must be input.
     # Another is a optional argument(--foo or -foo) and can be optionally input as the name.
     
-    EXPEMENT_LIST = ["flat", "two_head", "two_head_concat", "DHC", "MDHC", "MDHC_focal"]
+    EXPEMENT_LIST = {0:"flat", 1:"two_head", 2:"two_head_concat", 3:"DHC", 4:"MDHC", 5:"MDHC_focal"}
     
     parser.add_argument('experiment', type=int,
                         metavar='experiment',
@@ -168,8 +171,9 @@ if __name__ == "__main__":
     test_name = "ablation_final"
     log_dir = f"/home/files/experiments/ablation_test/{test_name}/{EXP_NAME}/"
     
-    if os.path.isdir(log_dir):
-        raise ValueError(f"Already experiment directory exists {log_dir}. delete it first.")
+    if MODE == "train":
+        if os.path.isdir(log_dir):
+            raise ValueError(f"Already experiment directory exists {log_dir}. delete it first.")
     
     answer = input(f"ARE YOU SURE to run {EXP_NAME} on cuda {DEVICE}? y, n : ")
     if answer == "y":
@@ -178,7 +182,9 @@ if __name__ == "__main__":
         raise ValueError("PROGRAM EXIT.")
     
     if EXP_NAME == "flat":
-        test_ablation_model(MODE, MODEL=None, LOSS=None, hierarchy=False, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
+        hierarchy = False
+        MODEL = "flat"
+        LOSS = "cross-entropy"
     else:
         hierarchy = True
         if EXP_NAME == "two_head":
@@ -198,6 +204,6 @@ if __name__ == "__main__":
             LOSS = "MHLN"
         else:
             raise ValueError(f"Wrong EXP_NAME : {EXP_NAME}. PROGRAM EXIT.")
-        test_ablation_model(MODE, MODEL=MODEL, LOSS=LOSS, hierarchy=hierarchy, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
+    test_ablation_model(MODE, MODEL=MODEL, LOSS=LOSS, hierarchy=hierarchy, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
 
 

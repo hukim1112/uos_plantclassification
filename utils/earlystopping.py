@@ -37,11 +37,10 @@ class EarlyStopping:
             score = metric
             delta = self.delta
 
-
         if self.best_score is None:
             self.best_score = score
             self.save_checkpoint(metric, epoch, model, optimizer)
-        elif score+delta < self.best_score:
+        elif (score<self.best_score)&(abs(score-self.best_score)<self.delta):
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
             if self.counter >= self.patience:
