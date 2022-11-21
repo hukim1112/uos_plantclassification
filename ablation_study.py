@@ -171,7 +171,7 @@ if __name__ == "__main__":
     if os.path.isdir(log_dir):
         raise ValueError(f"Already experiment directory exists {log_dir}. delete it first.")
     
-    answer = input(f"ARE YOU SURE to run {EXP_NAME} on cuda {DEVICE}? y, n")
+    answer = input(f"ARE YOU SURE to run {EXP_NAME} on cuda {DEVICE}? y, n : ")
     if answer == "y":
         pass
     else:
