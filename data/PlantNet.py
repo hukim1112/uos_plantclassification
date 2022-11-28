@@ -126,8 +126,9 @@ class GeneraPlantNet(PlantNet):
             label_to_class[label] = coarse
             class_to_name[coarse] = genera
             name_to_label[genera] = label
-        
-        return label_to_class, class_to_name, name_to_label
+        self.class_to_name = class_to_name
+        self.label_to_class = label_to_class
+        self.name_to_label = name_to_label
 
 class MiniPlantNet(PlantNet):
     def __init__(self, root, split, shuffle=False, transform=None, minimum_samples=32):

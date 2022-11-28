@@ -3,6 +3,9 @@ import torch
 from torch import nn
 import timm
 
+name_to_num_features = {'ResNet101' : 2048, 'WideResNet101_2' : 2048, "EfficientNetB4" : 1792}
+
+
 class Baseline(nn.Module):
     def __init__(self, loss_fn):
         super(Baseline, self).__init__()
@@ -70,9 +73,10 @@ class HierarchicalClassifier(nn.Module):
         super(HierarchicalClassifier, self).__init__()
         self.loss_fn = loss_fn
         self.baseline = baseline
-
-        self.linear_lvl1 = nn.Linear(1792, num_classes[0])
-        self.linear_lvl2 = nn.Linear(1792, num_classes[1])
+        self.num_feature = name_to_num_features[baseline.__class__.__name__]
+        
+        self.linear_lvl1 = nn.Linear(self.num_feature, num_classes[0])
+        self.linear_lvl2 = nn.Linear(self.num_feature, num_classes[1])
 
         self.softmax_reg1 = nn.Linear(num_classes[0], num_classes[0])
         self.softmax_reg2 = nn.Linear(num_classes[0]+num_classes[1], num_classes[1])
@@ -137,3 +141,23 @@ class HierarchicalClassifier(nn.Module):
             if optimizer is not None:
                 optimizer.load_state_dict(data['optimizer'])
             return optimizer
+
+class MDHC(HierarchicalClassifier):
+    def __init__(self, loss_fn, baseline, num_classes):
+        super(MDHC, self).__init__(loss_fn, baseline, num_classes)
+        self.lvl1_classifier = nn.Linear(self.num_feature, num_classes[0])
+        self.channel_attention = nn.Linear(num_classes[0], self.num_feature)
+        self.lvl2_classifier = nn.Linear(self.num_feature+num_classes[0], num_classes[1])
+        self.lvl1_rep = nn.Sequential(nn.Linear(num_classes[0], num_classes[0]),
+                                      nn.ReLU())
+        self.sigmoid = nn.Sigmoid()
+    def forward(self, images):
+        x = self.baseline.embedding(self.baseline.patch_embedding(images))
+               
+        level_1 = self.lvl1_classifier(x)
+        lvl1_rep = self.lvl1_rep(level_1)
+        attention_w = self.sigmoid(self.channel_attention(lvl1_rep))
+        
+        lvl2_rep = torch.cat( (lvl1_rep, attention_w*x), dim=-1) #weighted feature + coarse feature
+        level_2 = self.lvl2_classifier(lvl2_rep) 
+        return level_1, level_2

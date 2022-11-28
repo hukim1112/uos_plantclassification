@@ -18,10 +18,10 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 #Model import
-from models import EfficientB4, HierarchicalClassifier
-from test_models.ablation_models import TWO_HEAD, TWO_HEAD_CONCAT, MDHC
+from models import EfficientB4, ResNet101, WideResNet101_2, HierarchicalClassifier, MDHC
+from test_models.ablation_models import TWO_HEAD, TWO_HEAD_CONCAT
 #Loss import
-from test_models.ablation_loss import HierarchicalLossNetwork, MHLN, NO_HC_DEPENDENCY
+from utils.hierarchical_loss import HierarchicalLossNetwork, MHLN, NO_HC_DEPENDENCY
 
 with open(join(PATH["PLANTNET-300K"], "plantnet300K_species_id_2_name.json"), 'r') as file:
     label_to_species = json.load(file) #label => name
@@ -40,7 +40,7 @@ def metric_to_acc(metric):
 def metric_to_bal_acc(metric):
     return torch.mean(metric.result()["recalls"] ).item()
 
-def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_func, device):
+def test_ablation_model(MODE, BACKBONE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_func, device):
     os.makedirs(log_dir, exist_ok=True)
     weight_path = f"{log_dir}/checkpoint.pt"
         
@@ -55,10 +55,21 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
             data_loaders[split] = DataLoader(dataset, batch_size=32, shuffle=False, num_workers=4)
             metrics[split] = Metric_tracker(split, dataset.class_to_name, log_dir=log_dir, hierarchical=True, fine_to_coarse=fine_to_coarse)     
 
-        baseline_weight_path = "/home/files/experiments/plantnet/baseline/EfficientB4/genera/checkpoints/checkpoint.pt"
-        baseline = EfficientB4(num_classes=303, loss_fn=nn.CrossEntropyLoss()) #get your model
-        baseline.load(baseline_weight_path) # load Its the best checkpoint.
-        
+        if BACKBONE == "efficientnet":
+            baseline_weight_path = "/home/files/experiments/plantnet/baseline/EfficientB4/genera/checkpoints/checkpoint.pt"
+            baseline = EfficientB4(num_classes=303, loss_fn=nn.CrossEntropyLoss()) #get your model
+            baseline.load(baseline_weight_path) # load Its the best checkpoint.
+        elif BACKBONE == "resnet":
+            baseline_weight_path = "/home/files/experiments/plantnet/baseline/ResNet101/genera/checkpoints/checkpoint.pt"
+            baseline = ResNet101(num_classes=303, loss_fn=nn.CrossEntropyLoss()) #get your model
+            baseline.load(baseline_weight_path) # load Its the best checkpoint.
+        elif BACKBONE == "wideresnet":
+            baseline_weight_path = "/home/files/experiments/plantnet/baseline/WideResNet101_2/genera/checkpoints/checkpoint.pt"
+            baseline = WideResNet101_2(num_classes=303, loss_fn=nn.CrossEntropyLoss()) #get your model
+            baseline.load(baseline_weight_path) # load Its the best checkpoint.            
+        else:
+            raise ValueError(f"Wrong backbone name {BACKBONE}")
+     
         if MODEL == "two_head":
             net = TWO_HEAD
         elif MODEL == "two_head_concat":
@@ -96,7 +107,13 @@ def test_ablation_model(MODE, MODEL, LOSS, hierarchy, finetune, log_dir, metric_
                 class_to_name = dataset.class_to_name
             data_loaders[split] = DataLoader(dataset, batch_size=32, shuffle=False, num_workers=4)
             metrics[split] = Metric_tracker(split, class_to_name, log_dir=log_dir, hierarchical=False, fine_to_coarse=fine_to_coarse)
-        model = EfficientB4(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
+
+        if BACKBONE=="resnet":
+            model = ResNet101(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
+        elif BACKBONE == "wideresnet":
+            model = WideResNet101_2(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
+        else:
+            model = EfficientB4(num_classes=len(class_to_name), loss_fn=nn.CrossEntropyLoss()).to(device) #get your model
         
         print(f"finetune is {finetune}")
         if not finetune:
@@ -157,6 +174,9 @@ if __name__ == "__main__":
                         metavar='mode',
                         choices=["train", "test"],
                         help='train or test?')    
+    parser.add_argument("backbone", type=str,
+                        metavar="backbone choice",
+                        choices=["resnet", "wideresnet", "efficientnet"])
     parser.add_argument('device', type=int,
                         metavar='cuda gpu number',
                         choices=[0,1,2],
@@ -166,16 +186,17 @@ if __name__ == "__main__":
     EXP_NAME = EXPEMENT_LIST[args.experiment]
     DEVICE = f"cuda:{args.device}"
     MODE = args.mode
+    BACKBONE = args.backbone
     #input (MODEL, LOSS, hierarchy, finetune, log_dir, metric_func, device)
 
     test_name = "ablation_final"
-    log_dir = f"/home/files/experiments/ablation_test/{test_name}/{EXP_NAME}/"
+    log_dir = f"/home/files/experiments/ablation_test/{test_name}/{BACKBONE}/{EXP_NAME}/"
     
     if MODE == "train":
         if os.path.isdir(log_dir):
             raise ValueError(f"Already experiment directory exists {log_dir}. delete it first.")
     
-    answer = input(f"ARE YOU SURE to run {EXP_NAME} on cuda {DEVICE}? y, n : ")
+    answer = input(f"ARE YOU SURE to run {EXP_NAME} + {BACKBONE} on cuda {DEVICE}? y, n : ")
     if answer == "y":
         pass
     else:
@@ -204,6 +225,6 @@ if __name__ == "__main__":
             LOSS = "MHLN"
         else:
             raise ValueError(f"Wrong EXP_NAME : {EXP_NAME}. PROGRAM EXIT.")
-    test_ablation_model(MODE, MODEL=MODEL, LOSS=LOSS, hierarchy=hierarchy, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
+    test_ablation_model(MODE, BACKBONE=BACKBONE, MODEL=MODEL, LOSS=LOSS, hierarchy=hierarchy, finetune=True, log_dir=log_dir, metric_func=metric_to_acc, device=DEVICE)
 
 

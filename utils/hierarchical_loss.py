@@ -74,3 +74,22 @@ class HierarchicalLossNetwork:
             dloss += torch.sum(torch.pow(self.p_loss, D_l*l_prev)*torch.pow(self.p_loss, D_l*l_curr) - 1)
 
         return self.beta * dloss
+    
+class MHLN(HierarchicalLossNetwork):
+    def calculate_lloss(self, predictions, true_labels):
+        '''Calculates the layer loss.
+        '''
+        lloss = 0
+        for l in range(self.total_level):
+            lloss += self.focal_loss(predictions[l], true_labels[l])
+        return self.alpha * lloss
+    
+class NO_HC_DEPENDENCY(HierarchicalLossNetwork):
+    def __call__(self, predictions, true_labels):
+        self.step_count += 1
+        if self.beta == "scheduler":
+            self.beta_scheduler()
+        #dloss = self.calculate_dloss(predictions, true_labels)
+        lloss = self.calculate_lloss(predictions, true_labels)
+        total_loss = lloss
+        return total_loss
