@@ -73,8 +73,18 @@ class HierarchicalLossNetwork:
             dloss += torch.sum(torch.pow(self.p_loss, D_l*l_prev)*torch.pow(self.p_loss, D_l*l_curr) - 1)
 
         return self.beta * dloss
+
+class NO_HC_DEPENDENCY(HierarchicalLossNetwork):
+    def __call__(self, predictions, true_labels):
+        lloss = self.calculate_lloss(predictions, true_labels)
+        total_loss = lloss
+        return total_loss
     
 class MHLN(HierarchicalLossNetwork):
+    def __init__(self, fine_to_coarse, device, total_level=2, alpha=1, beta=0.8, p_loss=3):
+        super(MHLN, self).__init__(fine_to_coarse, device, total_level, alpha, beta, p_loss)
+        self.focal_loss = focal_loss(gamma=2.0)
+        
     def calculate_lloss(self, predictions, true_labels):
         '''Calculates the layer loss.
         '''
@@ -82,16 +92,6 @@ class MHLN(HierarchicalLossNetwork):
         for l in range(self.total_level):
             lloss += self.focal_loss(predictions[l], true_labels[l])
         return self.alpha * lloss
-    
-class NO_HC_DEPENDENCY(HierarchicalLossNetwork):
-    def __call__(self, predictions, true_labels):
-        self.step_count += 1
-        if self.beta == "scheduler":
-            self.beta_scheduler()
-        #dloss = self.calculate_dloss(predictions, true_labels)
-        lloss = self.calculate_lloss(predictions, true_labels)
-        total_loss = lloss
-        return total_loss
     
 class FocalLoss(nn.Module):
     """ Focal Loss, as described in https://arxiv.org/abs/1708.02002.
